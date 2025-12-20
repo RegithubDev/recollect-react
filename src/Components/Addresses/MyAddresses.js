@@ -118,7 +118,7 @@ const { serviceType } = route.params || {};
 
       <View style={styles.addressText}>
         <Text style={styles.addressTitle}>
-          {item.residenceType || 'Address'}
+          {item.fullName || 'Address'}
         </Text>
         <Text style={styles.addressSub}>{item.residenceDetails}</Text>
         <Text style={styles.addressSub}>
@@ -127,13 +127,14 @@ const { serviceType } = route.params || {};
       </View>
     </View>
 
-    {/* Tag */}
-    <View style={styles.tag}>
-      <Text style={styles.tagText}>{item.residenceType}</Text>
-    </View>
+ 
 
     {/* EDIT / DELETE — ALWAYS VISIBLE, OUTSIDE */}
     <View style={styles.actions}>
+         {/* Tag */}
+    {/* <View style={styles.tag}>
+      <Text style={styles.tagText}>{item.residenceType}</Text>
+    </View> */}
       <TouchableOpacity
         style={styles.actionBtn}
         onPress={() => editAddress(item)}
