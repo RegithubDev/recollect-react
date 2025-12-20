@@ -73,7 +73,7 @@ export const buildServiceIconUrl = (iconPath) => {
 
 
 const CUSTOMER_ADDRESS_LIST_URL =
-  'http://34.93.137.177/api/v1/customer/address/list';
+  'https://dev.recollect.in/api/v1/customer/address/list';
 
 
 export const getCustomerAddresses = async (token = null) => {
@@ -101,8 +101,8 @@ console.log("addresssres",res);
 
 
 const BIO_WASTE_CATEGORIES_URL =
-  'http://34.93.137.177/api/v1/mobile/list-bio-waste-categories';
-const BASED_FOR_ICONS = 'http://34.93.137.177/api/v1';
+  'http://dev.recollect.in/api/v1/mobile/list-bio-waste-categories';
+const BASED_FOR_ICONS = 'http://dev.recollect.in/api/v1';
 
 
 export const getBioWasteCategories = async (token = null) => {
@@ -133,8 +133,8 @@ export const buildBioWasteIcon = (path) => {
 };
 
 const SCRAP_WASTE_CATEGORIES_URL =
-  'http://34.93.137.177/api/v1/mobile/list-scrap-categories';
-const APP_FOR_ICONS = 'http://34.93.137.177/api/v1';
+  'http://dev.recollect.in/api/v1/mobile/list-scrap-categories';
+const APP_FOR_ICONS = 'http://dev.recollect.in/api/v1';
 export const getScrapCategories = async (token = null) => {
   try {
 
@@ -161,7 +161,7 @@ export const getScrapCategories = async (token = null) => {
 
 export const buildScrapIcon = (path) => {
   if (!path) return null;
-  return `http://34.93.137.177/${path}`;
+  return `http://dev.recollect.in/${path}`;
 };
 
 
@@ -180,7 +180,7 @@ console.log("token",token)
     }
 
    const res = await api.post(
-  'http://34.93.137.177/api/v1/order/place-bio-waste-order',
+  'http://dev.recollect.in/api/v1/order/place-bio-waste-order',
   {
     scheduleDate,
     altNumber,
@@ -213,7 +213,7 @@ export const getOrderHistory = async () => {
     const token = await AsyncStorage.getItem(TOKEN_KEY);
 
  const res = await api.get(
-  'http://34.93.137.177/api/v1/order/list-history',
+  'http://dev.recollect.in/api/v1/order/list-history',
   {
     headers: {
       Authorization: token ? `Bearer ${token}` : undefined,
