@@ -4,41 +4,48 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  
   const [userToken, setUserToken] = useState(null);
+  const [userRole, setUserRole] = useState(null); // 👈 NEW
   const [isLoading, setIsLoading] = useState(true);
 
-  //  Save token and mark user as logged-in
-  const login = async (token) => {
+  const login = async (token, role) => {
     try {
       setUserToken(token);
-      await AsyncStorage.setItem("userToken", token);
+      setUserRole(role);
+      await AsyncStorage.multiSet([
+        ["userToken", token],
+        ["userRole", role],
+      ]);
     } catch (error) {
-      console.log("Error saving token:", error);
+      console.log("Login error:", error);
     }
   };
 
-  // 🔹 Remove token and logout
   const logout = async () => {
     try {
       setUserToken(null);
-      await AsyncStorage.removeItem("userToken");
+      setUserRole(null);
+      await AsyncStorage.multiRemove(["userToken", "userRole"]);
     } catch (error) {
-      console.log("Error removing token:", error);
+      console.log("Logout error:", error);
     }
   };
 
-  //  Check login state on app start
   const checkLoginStatus = async () => {
     try {
-      const storedToken = await AsyncStorage.getItem("userToken");
-      if (storedToken) {
-        setUserToken(storedToken); // User is already logged-in
+      const [[, token], [, role]] = await AsyncStorage.multiGet([
+        "userToken",
+        "userRole",
+      ]);
+
+      if (token && role) {
+        setUserToken(token);
+        setUserRole(role);
       }
     } catch (error) {
-      console.log("Error reading token:", error);
+      console.log("Check login error:", error);
     }
-    setIsLoading(false); // Done loading
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -51,7 +58,8 @@ export const AuthProvider = ({ children }) => {
         login,
         logout,
         userToken,
-        isLoading
+        userRole,
+        isLoading,
       }}
     >
       {children}

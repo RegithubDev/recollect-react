@@ -272,7 +272,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const GetStartedScreen = ({ navigation }) => {
     const handleIndividualPress = () => {
-    navigation.navigate('Login'); // hook this to your screen
+    navigation.navigate('Login'); 
   };
 
   const handleOrganizationPress = () => {

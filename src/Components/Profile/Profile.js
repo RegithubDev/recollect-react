@@ -412,7 +412,7 @@
 
 
 
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   View,
   Text,
@@ -422,9 +422,11 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  Alert,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { AuthContext } from '../../context/AuthContext';
 
 
 const PROFILE_ITEMS = [
@@ -441,9 +443,23 @@ const PROFILE_ITEMS = [
   { id: 'delete', label: 'Delete Account', image: require('../../../assets/delete.png') },
 ];
 
+const SCREEN_MAP = {
+  wallet: 'WalletScreen',
+  scrap: 'ScrapMoneyScreen',
+  coupons: 'CouponsScreen',
+  orders: 'MyOrdersScreen',
+  faq: 'FaqScreen',
+  policies: 'PoliciesScreen',
+  about: 'AboutUsScreen',
+  call: 'ContactScreen',
+  share: 'ShareScreen',
+  chat: 'ChatScreen',
+  delete: 'DeleteAccountScreen',
+};
 
-const ProfileScreen = () => {
-  
+
+const ProfileScreen = ({navigation}) => {
+  const { logout } = useContext(AuthContext);
 const handleItemPress = (id) => {
   console.log('Pressed:', id);
 
@@ -539,14 +555,38 @@ const handleItemPress = (id) => {
       label={item.label}
       image={item.image}
        tintColor="#2de39e"
-      onPress={() => console.log(item.id)}
+     onPress={() => handleItemPress(item.id)}
     />
   ))}
 </View>
 
 
           {/* LOGOUT */}
-          <TouchableOpacity style={styles.logout}>
+      <TouchableOpacity
+  style={styles.logout}
+  onPress={async () => {
+    Alert.alert(
+      'Sign Out',
+      'Are you sure you want to sign out?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Yes',
+          style: 'destructive',
+          onPress: async () => {
+            await logout();
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'Splash2' }],
+            });
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  }}
+>
+
                <Image
      source={require('../../../assets/loggingout.png')}
      style={styles.arrowImage}

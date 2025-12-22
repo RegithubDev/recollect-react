@@ -16,10 +16,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const TOKEN_KEY = 'tempToken';
 
 const GRADIENTS = {
-  yellow: ['#4a4a4a', '#e7dfb1'],
-  red: ['#5a3a3a', '#f28b8b'],
-  white: ['#6a6a6a', '#e6e6e6'],
-  blue: ['#5a5f7a', '#b8c6ff'],
+  yellow: ['#84bda9ff', '#07291eff'],
+  red: ['#07291eff', '#b0ddcdff'],
+  white: ['#07291eff', '#1E6F52'],
+  blue: ['#07291eff', '#1E6F52'],
 };
 
 export default function SelectItemScreen({ navigation,route }) {
@@ -218,7 +218,7 @@ const selectedItemObjects = categories
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffffff',
+    backgroundColor: '#0b1410',
   },
 
 headerRow: {
@@ -236,11 +236,12 @@ headerRow: {
     width: 30,
     height: 30,
     resizeMode: 'contain',
+    tintColor:'#fff'
   },
 
   headerTitle: {
     fontSize: 22,
-    color: '#000000ff',
+    color: '#ffffffff',
     fontFamily: 'Poppins-SemiBold',
   },
 categoryBox: {
@@ -399,13 +400,13 @@ catText: {
   justifyContent: 'space-between',
   paddingHorizontal: 20,
   paddingVertical: 26,
-  backgroundColor: '#C8DB7A',
+  backgroundColor: '#143C2B',
   borderTopLeftRadius: 24,
   borderTopRightRadius: 24,
 },
 
 footerText: {
-  color: '#000000ff',
+  color: '#ffffffff',
   fontSize: 18,
   fontWeight: '700',
 },
@@ -413,7 +414,7 @@ footerText: {
 nextButton: {
   flexDirection: 'row',
   alignItems: 'center',
-  backgroundColor: '#7d9c00ff',
+  backgroundColor: '#2de39e',
   paddingHorizontal: 24,
   paddingVertical: 12,
   borderRadius: 28,

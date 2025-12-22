@@ -86,7 +86,7 @@ export default PickupSuccessScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffffff',
+    backgroundColor: '#0b1410',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingBottom: 30,
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     width: 90,
     height: 90,
     borderRadius: 45,
-    backgroundColor: '#6f9100ff',
+    backgroundColor: '#187D57',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 24,
@@ -115,14 +115,14 @@ const styles = StyleSheet.create({
   checkIcon: {
     width: 40,
     height: 40,
-    tintColor: '#000',
+    tintColor: '#ffffffff',
     resizeMode: 'contain',
   },
 
   /* THANK YOU TEXT */
   thankText: {
     fontSize: 18,
-    color: '#000000ff',
+    color: '#ffffffff',
     marginBottom: 30,
     fontFamily: 'Poppins-SemiBold',
   },
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
   /* INFO CARD */
   card: {
     width: '100%',
-    backgroundColor: '#bcca8fff',
+    backgroundColor: '#79a795ff',
     borderRadius: 22,
     paddingVertical: 24,
     paddingHorizontal: 22,
@@ -162,14 +162,14 @@ const styles = StyleSheet.create({
 
   /* TRACK BUTTON */
   trackBtn: {
-    backgroundColor: '#6f9100ff',
+    backgroundColor: '#187D57',
     paddingVertical: 18,
     borderRadius: 16,
     alignItems: 'center',
   },
 
   trackText: {
-    color: '#000',
+    color: '#ffffffff',
     fontSize: 16,
     fontFamily: 'Poppins-SemiBold',
   },

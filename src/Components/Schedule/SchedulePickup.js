@@ -41,10 +41,10 @@ const SchedulePickupScreen = ({ navigation,route }) => {
             textSectionTitleColor: '#9e9e9e',
             dayTextColor: '#9e9e9e',
             monthTextColor: '#fff',
-            selectedDayBackgroundColor: '#c7dd7f',
+            selectedDayBackgroundColor: '#187D57',
             selectedDayTextColor: '#000',
-            todayTextColor: '#c7dd7f',
-            arrowColor: '#c7dd7f',
+            todayTextColor: '#187D57',
+            arrowColor: '#187D57',
             textDisabledColor: '#444',
           }}
           minDate={new Date().toISOString().split('T')[0]}
@@ -87,7 +87,7 @@ export default SchedulePickupScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fffdfdff',
+    backgroundColor: '#0b1410',
     padding: 16,
   },
    headerRow: {
@@ -106,15 +106,17 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     resizeMode: 'contain',
+    tintColor:'#fff'
   },
 
   headerTitle: {
     fontSize: 22,
-    color: '#000000ff',
+    color: '#ffffffff',
     fontFamily: 'Poppins-SemiBold',
+    
   },
   subTitle: {
-    color: '#000000ff',
+    color: '#fffdfdff',
     marginVertical: 16,
     fontSize: 14,
   },
@@ -126,13 +128,13 @@ const styles = StyleSheet.create({
   },
   confirmBtn: {
     marginTop: 24,
-    backgroundColor: '#c7dd7f',
+    backgroundColor: '#187D57',
     paddingVertical: 16,
     borderRadius: 14,
     alignItems: 'center',
   },
   confirmText: {
-    color: '#000',
+    color: '#ffffffff',
     fontSize: 16,
     fontWeight: '600',
   },

@@ -50,7 +50,7 @@ const handleConfirmPickup = async () => {
     };
 
     const res = await placeBioWasteOrder(payload);
-console.log("res",res)
+console.log("confirmres",res)
     if (res?.message?.toLowerCase().includes('order')) {
       navigation.replace('PickupSuccess', {
         orderId: res?.data?.id,
@@ -238,7 +238,7 @@ console.log("res",res)
   onPress={handleConfirmPickup}
 >
   {placingOrder ? (
-    <ActivityIndicator color="#000" />
+    <ActivityIndicator color="#fff" />
   ) : (
     <Text style={styles.confirmText}>Confirm Pickup</Text>
   )}
@@ -255,7 +255,7 @@ console.log("res",res)
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fcfcfcff',
+    backgroundColor: '#0b1410',
   },
 
 headerRow: {
@@ -268,11 +268,13 @@ headerRow: {
   backButton: {
     paddingRight: 10,
     paddingVertical: 4,
+    tintColor:'#fff'
   },
     avatarImage: {
     width: 30,
     height: 30,
     resizeMode: 'contain',
+     tintColor:'#fff'
   },
 
   altInputContainer: {
@@ -299,7 +301,7 @@ altInput: {
 },
 
 saveAltBtn: {
-  backgroundColor: '#c6d97e',
+  backgroundColor: '#187D57',
   marginTop: 12,
   paddingVertical: 12,
   borderRadius: 14,
@@ -321,12 +323,12 @@ altNumberText: {
 
   headerTitle: {
     fontSize: 22,
-    color: '#000000ff',
+    color: '#ffffffff',
     fontFamily: 'Poppins-SemiBold',
   },
 
   card: {
-    backgroundColor: '#ccccccff',
+    backgroundColor: '#3d5049ff',
     borderRadius: 26,
     padding: 16,
     marginHorizontal: 16,
@@ -488,7 +490,7 @@ altNumberText: {
   },
 
   addMoreBtn: {
-    backgroundColor: '#c6d97e',
+    backgroundColor: '#187D57',
     paddingVertical: 14,
     borderRadius: 24,
     alignItems: 'center',
@@ -501,7 +503,7 @@ altNumberText: {
   },
 
   scheduleBtn: {
-    backgroundColor: '#c6d97e',
+    backgroundColor: '#126948ff',
     paddingVertical: 18,
     borderRadius: 30,
     alignItems: 'center',
@@ -512,6 +514,7 @@ altNumberText: {
   scheduleText: {
     fontSize: 18,
     fontWeight: '700',
+    color:'#fff'
   },
     confirmBtn: {
     backgroundColor: '#a7a7a7ff',
@@ -524,5 +527,6 @@ altNumberText: {
   confirmText: {
      fontSize: 18,
     fontWeight: '700',
+     color:'#fff'
   }
 });
