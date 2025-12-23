@@ -60,19 +60,25 @@ const PickupSuccessScreen = ({ navigation, route }) => {
 
       <TouchableOpacity
         style={styles.trackBtn}
-      onPress={() =>
-  navigation.reset({
-    index: 0,
-    routes: [
-      {
-        name: 'HomeTabs',
-        state: {
-          routes: [{ name: 'History' }],
+ onPress={() =>
+    navigation.reset({
+      index: 0,
+      routes: [
+        {
+          name: "CustomerTabs",
+          state: {
+            index: 3, // 👈 tab index of History
+            routes: [
+              { name: "Home" },
+              { name: "Wallet" },
+              { name: "Profile" },
+              { name: "History" },
+            ],
+          },
         },
-      },
-    ],
-  })
-}
+      ],
+    })
+  }
 
       >
         <Text style={styles.trackText}>Track Your Order</Text>

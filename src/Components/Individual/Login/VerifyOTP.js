@@ -75,25 +75,31 @@ const OtpScreen = ({ route, navigation }) => {
  const STATIC_OTP = "1111";
 
 const handleVerify = async () => {
-  const code = otp.join('');
+  const code = otp.join("");
 
   if (code !== STATIC_OTP) {
     Alert.alert("Invalid OTP", "Please enter correct OTP (1111)");
     return;
   }
 
-  // Simulate success
-  await AsyncStorage.setItem("accessToken", "dummy-static-token");
+  try {
+    if (!tempToken) {
+      Alert.alert("Error", "Token missing. Please login again.");
+      return;
+    }
 
-  // Log user in
-  await login("dummy-static-token");
+ 
+    await AsyncStorage.setItem("userToken", tempToken);
+    await AsyncStorage.setItem("userRole", "customer");
 
-  navigation.reset({
-    index: 0,
-    routes: [{ name: "HomeTabs" }],
-  });
+ 
+    await login(tempToken, "customer");
 
-  Alert.alert("Success", "OTP verified successfully");
+    Alert.alert("Success", "OTP verified successfully");
+  } catch (error) {
+    console.log("OTP Verify Error:", error);
+    Alert.alert("Error", "Something went wrong");
+  }
 };
 
 

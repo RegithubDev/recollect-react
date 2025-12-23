@@ -7,29 +7,16 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
-  StatusBar,ScrollView,
-  KeyboardAvoidingView,
+  StatusBar,
 } from 'react-native';
 
 const ProviderLogin = () => {
   return (
- <SafeAreaView style={styles.container}>
-  <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-
-  {/* Bubble Background */}
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
   <View style={styles.bubbleOne} />
   <View style={styles.bubbleTwo} />
   <View style={styles.bubbleThree} />
-
-  <KeyboardAvoidingView
-    style={{ flex: 1 }}
-    behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-  >
-    <ScrollView
-      contentContainerStyle={styles.scrollContent}
-      keyboardShouldPersistTaps="handled"
-      showsVerticalScrollIndicator={false}
-    >
       {/* Illustration */}
       <View style={styles.imageWrapper}>
         <Image
@@ -39,46 +26,50 @@ const ProviderLogin = () => {
         />
       </View>
 
-      {/* Login Card */}
-      <View style={styles.card}>
-        {/* Heading */}
-        
-        <View style={styles.cardHeader}>
-          <Text style={styles.cardTitle}>Provider Login</Text>
-          <Text style={styles.cardSubtitle}>
-            Sign in to continue managing collections
-          </Text>
-        </View>
+      {/* Form */}
+     {/* Form */}
+<View style={styles.form}>
 
-        <View style={styles.inputBox}>
-          <TextInput
-            placeholder="Username"
-            placeholderTextColor="rgba(255,255,255,0.6)"
-            style={styles.input}
-          />
-        </View>
+  {/* TRANSPARENT CARD */}
+  <View style={styles.card}>
+{/* Card Heading */}
+<View style={styles.cardHeader}>
+  <Text style={styles.cardTitle}>Provider Login</Text>
+  <Text style={styles.cardSubtitle}>
+    Sign in to continue managing collections
+  </Text>
+</View>
 
-        <View style={styles.inputBox}>
-          <TextInput
-            placeholder="Password"
-            placeholderTextColor="rgba(255,255,255,0.6)"
-            secureTextEntry
-            style={styles.input}
-          />
-        </View>
+    <View style={styles.inputBox}>
+      <TextInput
+        placeholder="Username"
+        placeholderTextColor="rgba(255,255,255,0.6)"
+        style={styles.input}
+      />
+    </View>
 
-        <TouchableOpacity>
-          <Text style={styles.forgot}>Forgot Password?</Text>
-        </TouchableOpacity>
+    <View style={styles.inputBox}>
+      <TextInput
+        placeholder="Password"
+        placeholderTextColor="rgba(255,255,255,0.6)"
+        secureTextEntry
+        style={styles.input}
+      />
+    </View>
 
-        <TouchableOpacity style={styles.loginBtn}>
-          <Text style={styles.loginText}>Login</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
-  </KeyboardAvoidingView>
-</SafeAreaView>
+    <TouchableOpacity>
+      <Text style={styles.forgot}>Forgot Password?</Text>
+    </TouchableOpacity>
 
+    <TouchableOpacity style={styles.loginBtn}>
+      <Text style={styles.loginText}>Login</Text>
+    </TouchableOpacity>
+
+  </View>
+
+</View>
+
+    </SafeAreaView>
   );
 };
 
@@ -94,35 +85,6 @@ const styles = StyleSheet.create({
 cardHeader: {
   marginBottom: 24,
 },
-scrollContent: {
-  flexGrow: 1,
-  justifyContent: 'center',
-  paddingHorizontal: 28,
-  paddingVertical: 40,
-},
-
-imageWrapper: {
-  alignItems: 'center',
-  marginBottom: 24,
-},
-
-image: {
-  width: '80%',
-  height: 200,
-  maxHeight: 240,
-},
-
-card: {
-  backgroundColor: 'rgba(255,255,255,0.12)',
-  borderRadius: 22,
-  padding: 28,
-
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 8 },
-  shadowOpacity: 0.3,
-  shadowRadius: 12,
-  elevation: 8,
-},
 
 cardTitle: {
   fontSize: 22,
@@ -136,11 +98,11 @@ cardSubtitle: {
   color: 'rgba(255,255,255,0.75)',
 },
 
-//   imageWrapper: {
-//     flex: 1.2,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//   },
+  imageWrapper: {
+    flex: 1.2,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   bubbleOne: {
   position: 'absolute',
   width: 260,
@@ -174,25 +136,25 @@ bubbleThree: {
   left: 40,
 },
 
-// card: {
-//   backgroundColor: 'rgba(255,255,255,0.12)', // transparent card
-//   borderRadius: 22,
-//   padding: 32,
+card: {
+  backgroundColor: 'rgba(255,255,255,0.12)', // transparent card
+  borderRadius: 22,
+  padding: 32,
 
-// //   borderWidth: 1,
-// //   borderColor: 'rgba(255,255,255,0.25)',
+//   borderWidth: 1,
+//   borderColor: 'rgba(255,255,255,0.25)',
 
-//   shadowColor: '#000',
-//   shadowOffset: { width: 0, height: 8 },
-//   shadowOpacity: 0.3,
-//   shadowRadius: 12,
-//   elevation: 8,
-// },
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 8 },
+  shadowOpacity: 0.3,
+  shadowRadius: 12,
+  elevation: 8,
+},
 
-//   image: {
-//     width: '85%',
-//     height: '85%',
-//   },
+  image: {
+    width: '85%',
+    height: '85%',
+  },
 
   form: {
     flex: 1,
