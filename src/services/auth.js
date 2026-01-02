@@ -165,35 +165,21 @@ export const buildScrapIcon = (path) => {
 };
 
 
-
-export const placeBioWasteOrder = async ({
-  scheduleDate,
-  altNumber,
-  addressId,
-  platform = 'android',
-}) => {
+export const placeBioWasteOrder = async (payload) => {
   try {
     const token = await AsyncStorage.getItem('tempToken');
-console.log("token",token)
-    if (!token) {
-      throw new Error('No auth token found');
-    }
 
-   const res = await api.post(
-  'https://dev.recollect.in/api/v1/order/place-bio-waste-order',
-  {
-    scheduleDate,
-    altNumber,
-    platform,
-    addressId,
-  },
-  {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }
-);
+    if (!token) throw new Error('No auth token found');
 
+    const res = await api.post(
+      'https://dev.recollect.in/api/v1/order/place-bio-waste-order',
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     return res.data;
   } catch (error) {
@@ -204,6 +190,7 @@ console.log("token",token)
     throw error;
   }
 };
+
 
 
 const TOKEN_KEY = 'tempToken';
@@ -232,17 +219,52 @@ export const getOrderHistory = async () => {
   }
 };
 
-
 export const placeScrapOrder = async (payload) => {
-  const token = await AsyncStorage.getItem(TOKEN_KEY);
+  try {
+    const token = await AsyncStorage.getItem(TOKEN_KEY);
 
-  return api.post(
-    "/order/place-scrap-order",
-    payload,
+    if (!token) throw new Error("No auth token found");
+
+    const res = await api.post(
+      "https://dev.recollect.in/api/v1/order/place-scrap-order",
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return res.data;
+  } catch (error) {
+    console.log(
+      "Place Scrap Order Error:",
+      error?.response?.data || error.message
+    );
+    throw error;
+  }
+};
+
+
+const BASE_URL = "https://dev.recollect.in/api/v1";
+
+export const addCustomerAddress = async (payload) => {
+  const token = await AsyncStorage.getItem("tempToken");
+
+  const res = await fetch(
+    `${BASE_URL}/customer/address/add`,
     {
+      method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        Accept: "*/*",
       },
+      body: JSON.stringify(payload),
     }
-  ).then(res => res.data);
+  );
+
+  const data = await res.json();
+
+  return { ok: res.ok, data };
 };

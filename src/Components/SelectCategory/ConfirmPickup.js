@@ -14,6 +14,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import { placeBioWasteOrder, placeScrapOrder } from '../../services/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+const TOKEN_KEY = "tempToken";
+
 export default function ConfirmPickupScreen({ navigation,route }) {
 const { selectedItems = [], address, selectedDate, serviceType,regionId  } = route.params || {};
   const [items, setItems] = useState(selectedItems);
@@ -44,51 +46,66 @@ const handleConfirmPickup = async () => {
   try {
     setPlacingOrder(true);
 
-const payload = {
-  scheduleDate: selectedDate,
-  altNumber: altNumber ? `+91${altNumber}` : undefined,
-  addressId: address?.id,
-  platform: "android",
+    const token = await AsyncStorage.getItem(TOKEN_KEY);
 
-  // 👉 ADD THESE
-  // regionId,
-  items: items?.map(i => ({
-    id: i.id,
-    quantity: i.quantity || 1,
-  })),
-  serviceType
-};
+    let payload;
+
+    // 🟣 BIO / DH WASTE ORDER
+if (serviceType === "bio") {
+  payload = {
+    scheduleDate: selectedDate,
+    altNumber: altNumber || undefined,
+    addressId: address?.id,
+    platform: "android",
+    items: items?.map(i => ({
+      id: i.id,
+      quantity: 1
+    }))
+  };
+
+  res = await placeBioWasteOrder(payload);
+}
 
 
-    let res;
-console.log("resssssppppp",payload)
-    if (serviceType === "scrap") {
-      res = await placeScrapOrder(payload);
-    } else {
-      res = await placeBioWasteOrder(payload);
-    
-    }
-console.log("ORDER RESPONSE", res);
-    if (res?.message?.toLowerCase().includes("order")) {
-    navigation.replace('PickupSuccess', {
-  orderId: res?.data?.id,
-  selectedDate: res?.data?.scheduleDate,
-  serviceType: serviceType || res?.data?.type,   // <-- important
-})
 
+    // 🟢 SCRAP ORDER (this API is usually different)
+ else if (serviceType === "scrap") {
+  payload = {
+    scheduleDate: selectedDate,
+    altNumber: altNumber ? `+91${altNumber}` : undefined,
+    platform: "android",
+    addressId: address?.id,
+    items: items?.map(i => ({
+      id: i.id,
+      quantity: i.quantity || 1
+    }))
+  };
+
+  res = await placeScrapOrder(payload);
+}
+
+
+    console.log("ORDER RESPONSE:", res);
+
+    if (res?.message?.toLowerCase()?.includes("order")) {
+      navigation.replace("PickupSuccess", {
+        orderId: res?.data?.id,
+        selectedDate: res?.data?.scheduleDate,
+        serviceType: serviceType || res?.data?.type
+      });
     } else {
       Alert.alert("Error", res?.message || "Failed to place order");
     }
-
   } catch (err) {
     Alert.alert(
-      "Ordersssss Failed",
+      "Order Failed",
       err?.response?.data?.message || err.message || "Something went wrong"
     );
   } finally {
     setPlacingOrder(false);
   }
 };
+
 
 
 

@@ -31,12 +31,19 @@ const tempToken =
   response?.data?.token ?? response?.data?.data?.token ?? null;
 console.log("temptoken",tempToken);
 
-      if (!tempToken) {
-        Alert.alert('Error', 'No token received');
-        return;
-      }
+const customerId = response?.data?.id ?? null;
+
+console.log("token", tempToken);
+console.log("customerId", customerId);
+
+
+   if (!tempToken || !customerId) {
+  Alert.alert("Error", "Login data missing");
+  return;
+}
 
       await AsyncStorage.setItem(TOKEN_KEY, tempToken);
+      await AsyncStorage.setItem("customerId", customerId.toString());
       navigation.navigate('OtpScreen', { phone, tempToken });
     } catch (error) {
       Alert.alert('Error', 'Failed to send OTP');

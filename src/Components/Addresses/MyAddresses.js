@@ -81,9 +81,13 @@ const { serviceType } = route.params || {};
     <Text style={styles.searchPlaceholder}>Search addresses...</Text>
   </View>
 
-  <TouchableOpacity style={styles.addBtn}>
-    <Text style={styles.addBtnText}>＋ Add Address</Text>
-  </TouchableOpacity>
+<TouchableOpacity
+  style={styles.addBtn}
+  onPress={() => navigation.navigate('AddAddress')}
+>
+  <Text style={styles.addBtnText}>＋ Add Address</Text>
+</TouchableOpacity>
+
 </View>
 
 

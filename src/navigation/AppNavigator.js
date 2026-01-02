@@ -16,7 +16,7 @@ import ProviderTabs from "../navigation/ProviderNavigator";
 
 /* Provider Auth */
 import ProviderLogin from '../Components/RecollectProviders/ProviderLogin/ProviderLogin';
-
+import AddAddressScreen from '../Components/Addresses/AddAddresses';
 /* Common Screens */
 import WalletScreen from "../Components/Profile/Wallet/wallet";
 import AboutUsScreen from "../Components/Profile/AboutUs/AboutUs";
@@ -89,6 +89,11 @@ const AppNavigator = () => {
           <Stack.Screen name="Schedule" component={SchedulePickupScreen} />
           <Stack.Screen name="SelectScrap" component={SelectScrapScreen} />
 <Stack.Screen name="SelectDHWaste" component={SelectDHWasteScreen} />
+<Stack.Screen
+  name="AddAddress"
+  component={AddAddressScreen}
+  options={{ headerShown: false }}
+/>
 
           <Stack.Screen
             name="PickupSuccess"

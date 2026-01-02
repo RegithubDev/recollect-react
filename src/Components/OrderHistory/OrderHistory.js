@@ -23,6 +23,7 @@ const scrapIcon = require('../../../assets/waste.png');
   const loadOrders = async () => {
     try {
       const data = await getOrderHistory();
+      console.log("orderhistory",data);
       setOrders(data);
     } catch (err) {
       console.log(err);
@@ -54,66 +55,66 @@ const scrapIcon = require('../../../assets/waste.png');
         <Text style={styles.subtitle}>Track all your waste pickups</Text>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {orders.map((item) => {
-          const isScrap = item.type === 'scrap';
+   <ScrollView
+  style={{ flex: 1 }}
+  showsVerticalScrollIndicator={false}
+  contentContainerStyle={{ flexGrow: 1, paddingBottom: 80 }}
+>
+  {orders.map(item => {
+    const isBio = item.type === 'biowaste';
 
-          return (
-            <View key={item.id} style={styles.card}>
-              {/* Top Row */}
-              <View style={styles.topRow}>
-                <View style={styles.leftRow}>
-                  <View
-                    style={[
-                      styles.iconCircle,
-                      { backgroundColor: isScrap ? '#1F3C2E' : '#3A2A12' },
-                    ]}
-                  >
-                    <Image
-                      source={
-                        isScrap
-                          ? require('../../../assets/waste.png')
-                          : require('../../../assets/hazard.png')
-                      }
-                      style={styles.icon}
-                    />
-                  </View>
-
-                  <View>
-                    <Text style={styles.typeText}>
-                      {isScrap ? 'Scrap' : 'DH Waste'}
-                    </Text>
-
-                    <View style={styles.dateRow}>
-                      {/* <Ionicons
-                        name="calendar-outline"
-                        size={14}
-                        color="#9CA3AF"
-                      /> */}
-                      <Text style={styles.dateText}>
-                        {new Date(item.scheduleDate).toDateString()}
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-
-                {renderStatus(item.status)}
-              </View>
-
-              {/* Bottom Row */}
-              <View style={styles.bottomRow}>
-                <Text style={styles.weightText}>
-                  Weight: <Text style={styles.bold}>{item.weight} kg</Text>
-                </Text>
-
-                {item.amount && (
-                  <Text style={styles.amount}>+₹{item.amount}</Text>
-                )}
-              </View>
+    return (
+      <View key={item.id} style={styles.card}>
+        
+        <View style={styles.topRow}>
+          <View style={styles.leftRow}>
+            <View
+              style={[
+                styles.iconCircle,
+                { backgroundColor: isBio ? '#3A2A12' : '#1F3C2E' },
+              ]}
+            >
+              <Image
+                source={
+                  isBio
+                    ? require('../../../assets/hazard.png')
+                    : require('../../../assets/waste.png')
+                }
+                style={styles.icon}
+              />
             </View>
-          );
-        })}
-      </ScrollView>
+
+            <View>
+              <Text style={styles.typeText}>
+                {isBio ? 'DH Waste' : 'Scrap'}
+              </Text>
+
+              <Text style={styles.dateText}>
+                {new Date(item.scheduleDate).toDateString()}
+              </Text>
+            </View>
+          </View>
+
+          {renderStatus(item.status)}
+        </View>
+
+        <View style={styles.bottomRow}>
+          <Text style={styles.weightText}>
+            Weight:{' '}
+            <Text style={styles.bold}>
+              {item.weight ? `${item.weight} kg` : '--'}
+            </Text>
+          </Text>
+
+          {item.amount && (
+            <Text style={styles.amount}>+₹{item.amount}</Text>
+          )}
+        </View>
+      </View>
+    );
+  })}
+</ScrollView>
+
     </SafeAreaView>
   );
 };
