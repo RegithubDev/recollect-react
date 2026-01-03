@@ -7,10 +7,11 @@ import {
   TouchableOpacity,
   ScrollView,
   Image,
+  Alert,
 } from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
-import { getCustomerAddresses } from '../../services/auth';
+import { deleteCustomerAddress, getCustomerAddresses } from '../../services/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const TOKEN_KEY = 'tempToken';
@@ -35,6 +36,45 @@ const { serviceType } = route.params || {};
       setLoading(false);
     }
   };
+
+  const deleteAddress = (id) => {
+  Alert.alert(
+    "Delete Address",
+    "Are you sure you want to delete this address?",
+    [
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+      {
+        text: "Yes, Delete",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            const res = await deleteCustomerAddress(id);
+
+            if (res.ok) {
+              Alert.alert("Address deleted successfully");
+              fetchAddresses();   // refresh list
+            } else {
+              Alert.alert(res?.data?.message || "Failed to delete address");
+            }
+          } catch (err) {
+            console.log(err);
+            Alert.alert("Something went wrong");
+          }
+        },
+      },
+    ]
+  );
+};
+
+
+const editAddress = (item) => {
+  navigation.navigate("EditAddress", { address: item, regionId: item.scrapRegionId, });
+};
+
+
   return (
     <LinearGradient
       colors={['#0b1410', '#0b1410', '#0b1410']}
@@ -165,15 +205,16 @@ const { serviceType } = route.params || {};
         />
       </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.actionBtn}
-        onPress={() => deleteAddress(item.id)}
-      >
-        <Image
-          source={require('../../../assets/deletebin.png')}
-          style={styles.Icon}
-        />
-      </TouchableOpacity>
+   <TouchableOpacity
+  style={styles.actionBtn}
+  onPress={() => deleteAddress(item.id)}
+>
+  <Image
+    source={require('../../../assets/deletebin.png')}
+    style={styles.Icon}
+  />
+</TouchableOpacity>
+
     </View>
   </TouchableOpacity>
 ))}

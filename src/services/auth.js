@@ -195,19 +195,29 @@ export const placeBioWasteOrder = async (payload) => {
 
 const TOKEN_KEY = 'tempToken';
 
-export const getOrderHistory = async () => {
+export const getOrderHistory = async ({
+  page = 0,
+  size = 20,
+  sort = 'id',
+  direction = 'ASC',
+} = {}) => {
   try {
     const token = await AsyncStorage.getItem(TOKEN_KEY);
 
- const res = await api.get(
-  'https://dev.recollect.in/api/v1/order/list-history',
-  {
-    headers: {
-      Authorization: token ? `Bearer ${token}` : undefined,
-    },
-  }
-);
-
+    const res = await api.get(
+      'https://dev.recollect.in/api/v1/order/list-history',
+      {
+        headers: {
+          Authorization: token ? `Bearer ${token}` : undefined,
+        },
+        params: {
+          page,
+          size,
+          sort,
+          direction,
+        },
+      }
+    );
 
     return res.data?.data?.content || [];
   } catch (error) {
@@ -218,6 +228,7 @@ export const getOrderHistory = async () => {
     throw error;
   }
 };
+
 
 export const placeScrapOrder = async (payload) => {
   try {
@@ -268,3 +279,82 @@ export const addCustomerAddress = async (payload) => {
 
   return { ok: res.ok, data };
 };
+
+
+
+const BASED_URL = "https://dev.recollect.in/api/v1";
+
+export const updateCustomerAddress = async (payload) => {
+  const token = await AsyncStorage.getItem("tempToken");
+
+  const res = await fetch(
+    `${BASED_URL}/customer/address/update`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        Accept: "*/*",
+      },
+      body: JSON.stringify(payload),
+    }
+  );
+
+  const data = await res.json();
+
+  return { ok: res.ok, data };
+};
+
+
+const URL = "https://dev.recollect.in/api/v1";
+
+export const deleteCustomerAddress = async (id) => {
+  const token = await AsyncStorage.getItem("tempToken");
+
+  const res = await fetch(
+    `${URL}/customer/address/delete/${id}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "*/*",
+      },
+    }
+  );
+
+  const data = await res.json();
+
+  return { ok: res.ok, data };
+};
+
+const BASE = "https://dev.recollect.in/api/v1";
+
+export const getAvailablePickupDates = async (regionId, fromDate, toDate) => {
+  const token = await AsyncStorage.getItem("tempToken");
+
+  const url = `${BASE}/scrap-region/list/available-dates/${regionId}?fromDate=${fromDate}&toDate=${toDate}`;
+
+  console.log("REQUEST:", url);
+
+  const res = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "*/*",
+    },
+  });
+
+  let data = null;
+
+  try {
+    data = await res.json();
+  } catch (e) {
+    data = null;
+  }
+
+  console.log("STATUS:", res.status);
+
+  return { ok: res.ok, status: res.status, data };
+};
+
+
+

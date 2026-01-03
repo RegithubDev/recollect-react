@@ -24,6 +24,8 @@ export default function SelectScrapScreen({ navigation, route }) {
   const [activeCategoryId, setActiveCategoryId] = useState(null);
   const [selectedItems, setSelectedItems] = useState([]);
   const [scrapTab, setScrapTab] = useState("SCRAP"); // SCRAP | DISPOSALS
+const { address, regionId } = route.params || {};
+console.log("scrapitemsparams",regionId);
 
   useEffect(() => {
     loadCategories();
@@ -198,6 +200,7 @@ export default function SelectScrapScreen({ navigation, route }) {
                 selectedItems: selectedItemObjects,
                 address: route.params?.address,
                 serviceType: "scrap",
+                 scrapRegionId: regionId,
               })
             }
           >

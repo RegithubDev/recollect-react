@@ -8,6 +8,7 @@ import {
   Image,
 } from 'react-native';
 import { Calendar } from 'react-native-calendars';
+import { getAvailablePickupDates } from '../../services/auth';
 
 function getVisibleRange(year, month) {
   const first = new Date(year, month - 1, 1);
@@ -23,16 +24,97 @@ function getVisibleRange(year, month) {
 const SchedulePickupScreen = ({ navigation,route }) => {
 
 
-const { address, selectedItems, selectedDate: prevDate, serviceType, regionId } =
+const { address, selectedItems, selectedDate: prevDate, serviceType, scrapRegionId } =
   route.params || {};
-
+console.log("paramsroute",scrapRegionId,serviceType);
   const [selectedDate, setSelectedDate] = useState(prevDate || '');
   const [availableDates, setAvailableDates] = useState({});
-  
-  useEffect(() => {
-    const value = !!selectedDate || selectedDate !== '' ? new Date(selectedDate) : new Date();
-    console.log("result", getVisibleRange(value.getFullYear(), value.getMonth() + 1));
-  }, [selectedDate])
+  const today = new Date();
+
+// min = today
+const MIN_DATE = today.toISOString().split("T")[0];
+
+// max = end of next month
+const nextMonth = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+const MAX_DATE = nextMonth.toISOString().split("T")[0];
+
+useEffect(() => {
+  const value =
+    !!selectedDate || selectedDate !== ""
+      ? new Date(selectedDate)
+      : new Date();
+
+  fetchAvailableDates(value.getFullYear(), value.getMonth() + 1);
+}, [selectedDate]);
+
+
+const fetchAvailableDates = async (year, month) => {
+  try {
+    const { start, end } = getVisibleRange(year, month);
+
+    const fromDate = start.toISOString().split("T")[0];
+    const toDate = end.toISOString().split("T")[0];
+
+    const res = await getAvailablePickupDates(scrapRegionId, fromDate, toDate);
+console.log("API RESPONSE RAW:", res);
+
+
+    if (!res.ok) {
+      console.log("API error:", res.data);
+      return;
+    }
+
+    const dates = {};
+
+    // Mark everything disabled by default
+    let d = new Date(start);
+    while (d <= end) {
+      const key = d.toISOString().split("T")[0];
+
+    const isBeforeToday = key < MIN_DATE;
+const isAfterMax = key > MAX_DATE;
+
+dates[key] = {
+  disabled: true,   // default: always disabled
+  customStyles: {
+    text: { color: "#666" }
+  }
+};
+
+
+
+      d.setDate(d.getDate() + 1);
+    }
+
+// Enable only API returned dates
+if (res?.data?.data && Array.isArray(res.data.data)) {
+  res.data.data.forEach(item => {
+    if (item.date >= MIN_DATE && item.date <= MAX_DATE) {
+      dates[item.date] = {
+        disabled: false,
+        available: true,
+        remainingSlots: item.remainingSlots,
+        customStyles: {
+          container: {
+            backgroundColor: "#187D57",
+            borderRadius: 50,
+          },
+          text: {
+            color: "#ffffff",
+            fontWeight: "700",
+          }
+        }
+      };
+    }
+  });
+}
+
+
+    setAvailableDates(dates);
+  } catch (err) {
+    console.log("fetchAvailableDates failed", err);
+  }
+};
 
 
 
@@ -57,26 +139,73 @@ const { address, selectedItems, selectedDate: prevDate, serviceType, regionId } 
 
       <View style={styles.calendarCard}>
         <Calendar
-          theme={{
-            backgroundColor: '#b4b4b4ff',
-            calendarBackground: '#000',
-            textSectionTitleColor: '#9e9e9e',
-            dayTextColor: '#9e9e9e',
-            monthTextColor: '#fff',
-            selectedDayBackgroundColor: '#187D57',
-            selectedDayTextColor: '#000',
-            todayTextColor: '#187D57',
-            arrowColor: '#187D57',
-            textDisabledColor: '#444',
-          }}
-          minDate={new Date().toISOString().split('T')[0]}
+           markingType="custom"
+  theme={{
+    backgroundColor: '#b4b4b4ff',
+    calendarBackground: '#000',
+    textSectionTitleColor: '#9e9e9e',
+    dayTextColor: '#9e9e9e',
+    todayTextColor: '#187D57',
+    arrowColor: '#187D57',
+    textDisabledColor: '#444',
+  }}
+ minDate={MIN_DATE}
+  maxDate={MAX_DATE}
+  disableAllTouchEventsForDisabledDays={true}
+          // minDate={new Date().toISOString().split('T')[0]}
          markedDates={availableDates}
 
-          onDayPress={day => {
-            if (!availableDates[day.dateString]?.disabled) {
-              setSelectedDate(day.dateString);
+onDayPress={day => {
+  const date = day.dateString;
+
+  if (availableDates[date]?.disabled) return;
+
+  setSelectedDate(date);
+
+  setAvailableDates(prev => {
+    const updated = { ...prev };
+
+    // reset ALL available dates to green again
+    Object.keys(updated).forEach(k => {
+      if (updated[k]?.available) {
+        updated[k] = {
+          ...updated[k],
+          customStyles: {
+            container: {
+              backgroundColor: "#187D57",
+              borderRadius: 50,
+            },
+            text: {
+              color: "#ffffff",
+              fontWeight: "700",
             }
-          }}
+          }
+        };
+      }
+    });
+
+    // apply selected style (white)
+    updated[date] = {
+      ...updated[date],
+      customStyles: {
+        container: {
+          backgroundColor: "#ffffff",
+          borderRadius: 50,
+          borderWidth: 2,
+          borderColor: "#187D57"
+        },
+        text: {
+          color: "#187D57",
+          fontWeight: "900",
+        }
+      }
+    };
+
+    return updated;
+  });
+}}
+
+
           onMonthChange={month => {
             fetchAvailableDates(month.year, month.month);
           }}
@@ -95,6 +224,7 @@ const { address, selectedItems, selectedDate: prevDate, serviceType, regionId } 
             selectedItems,
             selectedDate,
             serviceType,
+            scrapRegionId
           });
         }}
       >

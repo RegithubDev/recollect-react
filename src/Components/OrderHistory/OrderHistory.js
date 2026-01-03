@@ -1,37 +1,57 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   SafeAreaView,
-  ScrollView,
-  TouchableOpacity,
   Image,
-} from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import { getOrderHistory } from '../../services/auth';
+  ActivityIndicator,
+  FlatList,
+} from "react-native";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import { getOrderHistory } from "../../services/auth";
 
 const MyOrdersScreen = ({ navigation }) => {
   const [orders, setOrders] = useState([]);
-const sanitaryIcon = require('../../../assets/hazard.png');
-const scrapIcon = require('../../../assets/waste.png');
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   useEffect(() => {
     loadOrders();
   }, []);
 
   const loadOrders = async () => {
+    if (loadingMore || !hasMore) return;
+
     try {
-      const data = await getOrderHistory();
-      console.log("orderhistory",data);
-      setOrders(data);
+      setLoadingMore(true);
+
+      const data = await getOrderHistory({
+        page,
+        size: 20,
+        sort: "id",
+        direction: "DESC",
+      });
+
+      // data should be array (content)
+      const list = data || [];
+
+      setOrders(prev => [...prev, ...list]);
+
+      // if API returned less than size → no more pages
+      setHasMore(list.length === 20);
+
+      setPage(prev => prev + 1);
     } catch (err) {
       console.log(err);
+    } finally {
+      setLoadingMore(false);
     }
   };
 
-  const renderStatus = (status) => {
-    if (status === 'completed') {
+  const renderStatus = status => {
+    if (status === "completed") {
       return (
         <View style={[styles.statusPill, styles.completed]}>
           <Ionicons name="checkmark-circle" size={16} color="#2ED573" />
@@ -39,46 +59,32 @@ const scrapIcon = require('../../../assets/waste.png');
         </View>
       );
     }
+
     return (
       <View style={[styles.statusPill, styles.scheduled]}>
-        {/* <Ionicons name="time" size={16} color="#FFC048" /> */}
         <Text style={styles.statusText}> Scheduled</Text>
       </View>
     );
   };
 
-  return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Pickup History</Text>
-        <Text style={styles.subtitle}>Track all your waste pickups</Text>
-      </View>
-
-   <ScrollView
-  style={{ flex: 1 }}
-  showsVerticalScrollIndicator={false}
-  contentContainerStyle={{ flexGrow: 1, paddingBottom: 80 }}
->
-  {orders.map(item => {
-    const isBio = item.type === 'biowaste';
+  const renderItem = ({ item }) => {
+    const isBio = item.type === "biowaste";
 
     return (
-      <View key={item.id} style={styles.card}>
-        
+      <View style={styles.card}>
         <View style={styles.topRow}>
           <View style={styles.leftRow}>
             <View
               style={[
                 styles.iconCircle,
-                { backgroundColor: isBio ? '#3A2A12' : '#1F3C2E' },
+                { backgroundColor: isBio ? "#3A2A12" : "#1F3C2E" },
               ]}
             >
               <Image
                 source={
                   isBio
-                    ? require('../../../assets/hazard.png')
-                    : require('../../../assets/waste.png')
+                    ? require("../../../assets/hazard.png")
+                    : require("../../../assets/waste.png")
                 }
                 style={styles.icon}
               />
@@ -86,7 +92,7 @@ const scrapIcon = require('../../../assets/waste.png');
 
             <View>
               <Text style={styles.typeText}>
-                {isBio ? 'DH Waste' : 'Scrap'}
+                {isBio ? "DH Waste" : "Scrap"}
               </Text>
 
               <Text style={styles.dateText}>
@@ -99,12 +105,12 @@ const scrapIcon = require('../../../assets/waste.png');
         </View>
 
         <View style={styles.bottomRow}>
-          <Text style={styles.weightText}>
-            Weight:{' '}
+          {/* <Text style={styles.weightText}>
+            Weight:{" "}
             <Text style={styles.bold}>
-              {item.weight ? `${item.weight} kg` : '--'}
+              {item.weight ? `${item.weight} kg` : "--"}
             </Text>
-          </Text>
+          </Text> */}
 
           {item.amount && (
             <Text style={styles.amount}>+₹{item.amount}</Text>
@@ -112,14 +118,39 @@ const scrapIcon = require('../../../assets/waste.png');
         </View>
       </View>
     );
-  })}
-</ScrollView>
+  };
 
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Pickup History</Text>
+        <Text style={styles.subtitle}>Track all your waste pickups</Text>
+      </View>
+
+      <FlatList
+        data={orders}
+        keyExtractor={item => item.id?.toString()}
+        renderItem={renderItem}
+        contentContainerStyle={{ paddingBottom: 60 }}
+        showsVerticalScrollIndicator={false}
+        onEndReached={loadOrders}
+        onEndReachedThreshold={0.4}
+        ListFooterComponent={
+          loadingMore ? (
+            <ActivityIndicator
+              size="large"
+              color="#2ED573"
+              style={{ marginVertical: 20 }}
+            />
+          ) : null
+        }
+      />
     </SafeAreaView>
   );
 };
 
 export default MyOrdersScreen;
+
 
 
 const styles = StyleSheet.create({

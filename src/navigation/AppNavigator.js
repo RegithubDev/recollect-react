@@ -15,7 +15,7 @@ import OrganisationTabs from "../navigation/OrganisationNavigator";
 import ProviderTabs from "../navigation/ProviderNavigator";                
 
 /* Provider Auth */
-import ProviderLogin from '../Components/RecollectProviders/ProviderLogin/ProviderLogin';
+import ProviderLogin from '../Components/RecollectProviders/ProvidersLogin/ProviderLogin';
 import AddAddressScreen from '../Components/Addresses/AddAddresses';
 /* Common Screens */
 import WalletScreen from "../Components/Profile/Wallet/wallet";
@@ -29,6 +29,8 @@ import SchedulePickupScreen from "../Components/Schedule/SchedulePickup";
 import PickupSuccessScreen from "../Components/SelectCategory/PickupSuccess";
 import SelectDHWasteScreen from "../Components/SelectCategory/SelectItemScreens/DHWasteItemsUI";
 import SelectScrapScreen from '../Components/SelectCategory/SelectItemScreens/ScrapItemsUI';
+import EditAddressScreen from '../Components/Addresses/EditAddresses';
+
 const Stack = createNativeStackNavigator();
 
 const AppNavigator = () => {
@@ -92,6 +94,11 @@ const AppNavigator = () => {
 <Stack.Screen
   name="AddAddress"
   component={AddAddressScreen}
+  options={{ headerShown: false }}
+/>
+<Stack.Screen
+  name="EditAddress"
+  component={EditAddressScreen}
   options={{ headerShown: false }}
 />
 

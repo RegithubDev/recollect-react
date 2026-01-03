@@ -23,6 +23,9 @@ export default function SelectDHWasteScreen({ navigation, route }) {
   const [categories, setCategories] = useState([]);
   const [activeCategoryId, setActiveCategoryId] = useState(null);
   const [selectedItems, setSelectedItems] = useState([]);
+const { address, regionId } = route.params || {};
+console.log("dhwasteparams",regionId);
+
 
   useEffect(() => {
     loadCategories();
@@ -151,6 +154,7 @@ export default function SelectDHWasteScreen({ navigation, route }) {
                 selectedItems: selectedItemObjects,
                 address: route.params?.address,
                  serviceType: "bio",
+                  scrapRegionId: regionId,
               })
             }
           >

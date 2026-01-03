@@ -249,6 +249,7 @@ const selectedItemObjects = categories
   navigation.navigate('ConfirmPickup', {
     selectedItems: selectedItemObjects,
      address: route.params?.address,
+     scrapRegionId
   })
 }
 

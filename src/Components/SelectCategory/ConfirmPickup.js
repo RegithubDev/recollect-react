@@ -17,7 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const TOKEN_KEY = "tempToken";
 
 export default function ConfirmPickupScreen({ navigation,route }) {
-const { selectedItems = [], address, selectedDate, serviceType,regionId  } = route.params || {};
+const { selectedItems = [], address, selectedDate, serviceType,scrapRegionId  } = route.params || {};
   const [items, setItems] = useState(selectedItems);
 const [showAltInput, setShowAltInput] = useState(false);
 const [altNumber, setAltNumber] = useState('');
@@ -261,7 +261,7 @@ if (serviceType === "bio") {
       selectedItems: items,
       selectedDate,
        serviceType,
-        regionId,
+     scrapRegionId
     })
   }
 >

@@ -1,11 +1,11 @@
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-
+import ProviderHome from '../Components/RecollectProviders/ProviderHome/ProviderHome';
 /* Screens */
-
-import ProfileScreen from '../Components/Profile/Profile';
-
+import ProviderHistory from '../Components/RecollectProviders/ProviderHistory/ProviderHistory';
+import EarningsScreen from '../Components/RecollectProviders/ProviderEarnings/ProviderEarnings';
+import ProviderProfile from '../Components/RecollectProviders/ProviderProfile/ProviderProfile';
 const Tab = createBottomTabNavigator();
 
 const ProviderBottomTabs = () => {
@@ -25,7 +25,7 @@ const ProviderBottomTabs = () => {
           <View style={styles.glowContainer} />
         ),
 
-        tabBarActiveTintColor: '#ff9f43',
+        tabBarActiveTintColor: '#19A463',
         tabBarInactiveTintColor: '#9CA3AF',
 
         tabBarLabelStyle: {
@@ -65,10 +65,10 @@ const ProviderBottomTabs = () => {
         },
       })}
     >
-      <Tab.Screen name="Pickups" component={ProfileScreen} />
-      <Tab.Screen name="Requests" component={ProfileScreen} />
-      <Tab.Screen name="Earnings" component={ProfileScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen name="Pickups" component={ProviderHome} />
+      <Tab.Screen name="Requests" component={ProviderHistory} />
+      <Tab.Screen name="Earnings" component={EarningsScreen} />
+      <Tab.Screen name="Profile" component={ProviderProfile} />
     </Tab.Navigator>
   );
 };
