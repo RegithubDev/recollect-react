@@ -135,28 +135,32 @@ export const buildBioWasteIcon = (path) => {
 const SCRAP_WASTE_CATEGORIES_URL =
   'https://dev.recollect.in/api/v1/mobile/list-scrap-categories';
 const APP_FOR_ICONS = 'https://dev.recollect.in/api/v1';
-export const getScrapCategories = async (token = null) => {
+export const getScrapCategories = async (token = null, districtId) => {
   try {
-
-     const headers = {};
+    const headers = {};
     if (token) headers.Authorization = `Bearer ${token}`;
 
- 
-    const res = await axios.get(SCRAP_WASTE_CATEGORIES_URL, {
-      timeout: 10000,
-      headers,
-    });
- console.log("scrapres",res)
-       const payload = res?.data ?? res;
+    const res = await axios.get(
+      `${SCRAP_WASTE_CATEGORIES_URL}?districtId=${districtId}`,
+      {
+        timeout: 10000,
+        headers,
+      }
+    );
+
+    console.log("scrapres", res);
+
+    const payload = res?.data ?? res;
     return payload?.data ?? [];
   } catch (err) {
     console.log(
-      'GET SCRAP WASTE CATEGORIES ERROR:',
+      "GET SCRAP WASTE CATEGORIES ERROR:",
       err?.response?.data ?? err?.message ?? err
     );
     throw err;
   }
 };
+
 
 
 export const buildScrapIcon = (path) => {
@@ -306,6 +310,34 @@ export const updateCustomerAddress = async (payload) => {
 };
 
 
+export const updateCustomerProfile = async (payload) => {
+  const token = await AsyncStorage.getItem("tempToken");
+
+  const res = await fetch(
+    `${BASED_URL}/customer/update-profile`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        Accept: "*/*",
+      },
+      body: JSON.stringify(payload),
+    }
+  );
+
+  let data = null;
+
+  try {
+    data = await res.json();
+  } catch (e) {
+    data = null;
+  }
+
+  return { ok: res.ok, status: res.status, data };
+};
+
+
 const URL = "https://dev.recollect.in/api/v1";
 
 export const deleteCustomerAddress = async (id) => {
@@ -357,4 +389,116 @@ export const getAvailablePickupDates = async (regionId, fromDate, toDate) => {
 };
 
 
+export const getOrderDetails = async (orderId) => {
+  try {
+    const token = await AsyncStorage.getItem("tempToken");
 
+    const res = await api.get(
+      `https://dev.recollect.in/api/v1/order/details/${orderId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return res?.data?.data || null;
+  } catch (err) {
+    console.log("Order Details Error:", err?.response?.data || err);
+    throw err;
+  }
+};
+
+export const getWardList = async (size = 20) => {
+  try {
+    const token = await AsyncStorage.getItem("tempToken");
+
+    let page = 0;
+    let all = [];
+    let hasMore = true;
+
+    while (hasMore) {
+      const res = await api.get(
+        `https://dev.recollect.in/api/v1/ward/list?size=${size}&page=${page}&sort=id&direction=ASC`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = res?.data?.data;
+
+      const content = data?.content || [];
+      all = [...all, ...content];
+
+      const totalPages = data?.totalPages ?? 0;
+
+      page++;
+
+      hasMore = page < totalPages;
+    }
+
+    return all;
+  } catch (err) {
+    console.log("Ward List Error:", err?.response?.data || err);
+    throw err;
+  }
+};
+
+
+export const getScrapRegionList = async (size = 20) => {
+  try {
+    const token = await AsyncStorage.getItem("tempToken");
+
+    let page = 0;
+    let all = [];
+    let hasMore = true;
+
+    while (hasMore) {
+      const res = await api.get(
+        `https://dev.recollect.in/api/v1/scrap-region/list?size=${size}&page=${page}&sort=id&direction=ASC`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = res?.data?.data;
+
+      const content = data?.content || [];
+      all = [...all, ...content];
+
+      const totalPages = data?.totalPages ?? 0;
+
+      page++;
+
+      hasMore = page < totalPages;
+    }
+
+    return all;
+  } catch (err) {
+    console.log("Scrap Region List Error:", err?.response?.data || err);
+    throw err;
+  }
+};
+export const getCustomerAddressDetails = async (id) => {
+  try {
+    const token = await AsyncStorage.getItem("tempToken");
+
+    const res = await api.get(
+      `https://dev.recollect.in/api/v1/customer/address/details/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return res?.data?.data || null;
+  } catch (e) {
+    console.log("ADDRESS DETAILS ERROR", e?.response?.data || e);
+    throw e;
+  }
+};

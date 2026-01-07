@@ -53,7 +53,7 @@ export default AboutUsScreen;
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: '#ffffffff', // very dark background like the screenshot
+    backgroundColor: '#0b1410', // very dark background like the screenshot
   },
   headerRow: {
     flexDirection: 'row',
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(0, 0, 0, 0.06)',
+    backgroundColor: 'rgba(255, 255, 255, 0.27)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -74,13 +74,13 @@ const styles = StyleSheet.create({
     width: 18,
     height: 18,
     resizeMode: 'contain',
-    tintColor: '#000000ff',
+    tintColor: '#ffffffff',
   },
   headerTitle: {
     flex: 1,
     textAlign: 'center',
     fontSize: 20,
-    color: '#000000ff',
+    color: '#ffffffff',
     fontFamily: 'Poppins-SemiBold',
   },
 

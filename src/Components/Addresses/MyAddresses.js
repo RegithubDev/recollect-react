@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -8,11 +8,13 @@ import {
   ScrollView,
   Image,
   Alert,
+  FlatList,
 } from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
 import { deleteCustomerAddress, getCustomerAddresses } from '../../services/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 
 const TOKEN_KEY = 'tempToken';
 
@@ -20,15 +22,19 @@ const MyAddressesScreen = ({ navigation,route }) => {
    const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(false);
 const { serviceType } = route.params || {};
-  useEffect(() => {
+useFocusEffect(
+  useCallback(() => {
     fetchAddresses();
-  }, []);
+  }, [])
+);
+
 
   const fetchAddresses = async () => {
     setLoading(true);
     try {
       const token = await AsyncStorage.getItem(TOKEN_KEY);
       const data = await getCustomerAddresses(token);
+      console.log("customeraddress",data);
       setAddresses(data);
     } catch (err) {
       console.log('Address load failed');
@@ -135,89 +141,70 @@ const editAddress = (item) => {
           <Text style={styles.sectionTitle}>Your Saved Addresses</Text>
 
           {/* Address List */}
-{addresses.map(item => (
-  <TouchableOpacity
-    key={item.id}
-    style={styles.addressCard}
-    activeOpacity={0.9}
-    // onPress={() =>
-    //   navigation.navigate('SelectItem', { address: item, serviceType })
-    // }
-    onPress={() => {
-  if (serviceType?.toLowerCase().includes('scrap')) {
-    navigation.navigate('SelectScrap', {
-      address: item,
-      serviceType,
-      regionId: item.scrapRegionId,
-    });
-  } else {
-    navigation.navigate('SelectDHWaste', {
-      address: item,
-      serviceType,
-      regionId: item.scrapRegionId,
-    });
-  }
-}}
+<FlatList
+  data={addresses}
+  keyExtractor={(item) => item.id.toString()}
+  contentContainerStyle={{ paddingBottom: 60 }}
+  renderItem={({ item }) => (
+    <TouchableOpacity
+      style={styles.addressCard}
+      activeOpacity={0.9}
+      onPress={() => {
+        if (serviceType?.toLowerCase().includes('scrap')) {
+          navigation.navigate('SelectScrap', {
+            address: item,
+            serviceType,
+            regionId: item.scrapRegionId,
+            districtId: item.districtId, 
+          });
+        } else {
+          navigation.navigate('SelectDHWaste', {
+            address: item,
+            serviceType,
+            regionId: item.scrapRegionId,
+          });
+        }
+      }}
+    >
+      {item.isPrimary && (
+        <View style={styles.primaryBadge}>
+          <Text style={styles.primaryText}>★ Primary</Text>
+        </View>
+      )}
 
-  >
-    {/* Primary badge */}
-    {item.isPrimary && (
-      <View style={styles.primaryBadge}>
-        <Text style={styles.primaryText}>★ Primary</Text>
+      <View style={styles.addressRow}>
+        <View style={styles.iconCircle}>
+          <Image source={require('../../../assets/locate.png')} style={styles.addIcon} />
+        </View>
+
+        <View style={styles.addressText}>
+          <Text style={styles.addressTitle}>{item.residenceType || 'Address'}</Text>
+          <Text style={styles.addressSub}>{item.residenceDetails}</Text>
+          <Text style={styles.addressSub}>
+            {item.wardName}
+            {/* , {item.districtName} */}
+          </Text>
+        </View>
       </View>
-    )}
 
-    {/* Address row */}
-    <View style={styles.addressRow}>
-      <View style={styles.iconCircle}>
-        <Image
-          source={require('../../../assets/locate.png')}
-          style={styles.addIcon}
-        />
-      </View>
-
-      <View style={styles.addressText}>
-        <Text style={styles.addressTitle}>
-          {item.fullName || 'Address'}
-        </Text>
-        <Text style={styles.addressSub}>{item.residenceDetails}</Text>
-        <Text style={styles.addressSub}>
-          {item.localBodyName}, {item.districtName}
-        </Text>
-      </View>
-    </View>
-
- 
-
-    {/* EDIT / DELETE — ALWAYS VISIBLE, OUTSIDE */}
-    <View style={styles.actions}>
-         {/* Tag */}
-    {/* <View style={styles.tag}>
-      <Text style={styles.tagText}>{item.residenceType}</Text>
-    </View> */}
-      <TouchableOpacity
-        style={styles.actionBtn}
-        onPress={() => editAddress(item)}
-      >
-        <Image
-          source={require('../../../assets/pencil.png')}
-          style={styles.Icon}
-        />
-      </TouchableOpacity>
-
-   <TouchableOpacity
-  style={styles.actionBtn}
-  onPress={() => deleteAddress(item.id)}
+      <View style={styles.actions}>
+        <TouchableOpacity style={styles.actionBtn}onPress={() =>
+  navigation.navigate("EditAddress", {
+    addressId: item.id
+  })
+}
 >
-  <Image
-    source={require('../../../assets/deletebin.png')}
-    style={styles.Icon}
-  />
-</TouchableOpacity>
+          <Image source={require('../../../assets/pencil.png')} style={styles.Icon} />
+        </TouchableOpacity>
 
-    </View>
-  </TouchableOpacity>
-))}
+        <TouchableOpacity style={styles.actionBtn} onPress={() => deleteAddress(item.id)}>
+          <Image source={require('../../../assets/deletebin.png')} style={styles.Icon} />
+        </TouchableOpacity>
+      </View>
+    </TouchableOpacity>
+  )}
+/>
+
 
 
 

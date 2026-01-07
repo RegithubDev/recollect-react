@@ -61,7 +61,7 @@ const ScrapMoneyScreen = ({ navigation }) => {
       {/* Balance gradient bar */}
       <View style={styles.balanceWrap}>
         <LinearGradient
-          colors={['#10120a', '#3a4b23', '#10120a']}
+          colors={['#10120a', '#187D57', '#10120a']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.balanceGradient}
@@ -89,12 +89,12 @@ const ScrapMoneyScreen = ({ navigation }) => {
           <Text style={styles.historyTitle}>Transaction History</Text>
 
           <View style={styles.historyIcons}>
-            <TouchableOpacity style={styles.iconBtn}>
+            {/* <TouchableOpacity style={styles.iconBtn}> */}
               {/* <Icon name="download-outline" size={20} color="#b9d44f" /> */}
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.iconBtn, { marginLeft: 10 }]}>
+            {/* </TouchableOpacity> */}
+            {/* <TouchableOpacity style={[styles.iconBtn, { marginLeft: 10 }]}> */}
               {/* <Icon name="filter-outline" size={20} color="#b9d44f" /> */}
-            </TouchableOpacity>
+            {/* </TouchableOpacity> */}
           </View>
         </View>
 
@@ -111,7 +111,7 @@ export default ScrapMoneyScreen;
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: '#ffffffff', // screen background black
+    backgroundColor: '#0b1410', // screen background black
   },
   header: {
     height: 56,
@@ -126,12 +126,13 @@ const styles = StyleSheet.create({
     width: 25,
     height: 25,
     resizeMode: 'contain',
+    tintColor:'#fff'
   },
   backBtn: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#111',
+    backgroundColor: '#808080ff',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -158,7 +159,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#d6e78a',
+    backgroundColor: '#187D57',
     alignItems: 'center',
     justifyContent: 'center',
     // little border to match screenshot
@@ -167,7 +168,7 @@ const styles = StyleSheet.create({
   },
   greeting: {
     marginTop: 8,
-    color: '#869b52ff',
+    color: '#fcfcfcff',
     fontSize: 16,
     fontWeight: '700',
     textAlign: 'center',
@@ -192,7 +193,7 @@ const styles = StyleSheet.create({
   },
   availableLabel: {
     marginTop: 10,
-    color: '#869b52ff',
+    color: '#187D57',
     fontWeight: '700',
   },
 
@@ -205,7 +206,7 @@ const styles = StyleSheet.create({
   actionBtn: {
     width: (width - 72) / 2, // equal width, with margins
     paddingVertical: 14,
-    backgroundColor: '#869b52ff',
+    backgroundColor: '#187D57',
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
@@ -213,7 +214,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   actionText: {
-    color: '#0a0a0a',
+    color: '#ffffffff',
     fontSize: 16,
     fontWeight: '700',
   },
@@ -221,7 +222,7 @@ const styles = StyleSheet.create({
   historyCard: {
     flex: 1,
     marginTop: 20,
-    backgroundColor: '#b6b6b6ff',
+    backgroundColor: '#727473ff',
     borderTopLeftRadius: 26,
     borderTopRightRadius: 26,
     paddingHorizontal: 18,
@@ -233,7 +234,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   historyTitle: {
-    color: '#000000ff',
+    color: '#ffffffff',
     fontWeight: '700',
     fontSize: 18,
   },
@@ -245,8 +246,8 @@ const styles = StyleSheet.create({
     height: 44,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#2d2d2d',
-    backgroundColor: '#111213',
+    borderColor: '#acacacff',
+    backgroundColor: '#b1b1b1ff',
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
@@ -260,7 +261,7 @@ const styles = StyleSheet.create({
     paddingVertical: 40,
   },
   noDataText: {
-    color: '#000000ff',
+    color: '#ffffffff',
     fontSize: 18,
     textAlign: 'center',
     opacity: 0.9,

@@ -1,7 +1,7 @@
 
 
 
-import React, { useContext } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,8 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { AuthContext } from '../../context/AuthContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 
 
 const PROFILE_ITEMS = [
@@ -33,13 +35,14 @@ const PROFILE_ITEMS = [
 ];
 
 const SCREEN_MAP = {
-  wallet: 'WalletScreen',
-  scrap: 'ScrapMoneyScreen',
-  coupons: 'CouponsScreen',
-  orders: 'MyOrdersScreen',
+
+  wallet: 'Wallet',
+  scrap: 'Scrap',
+  coupons: 'Coupons',
+  orders: 'History',
   faq: 'FaqScreen',
   policies: 'PoliciesScreen',
-  about: 'AboutUsScreen',
+  about: 'AboutUs',
   call: 'ContactScreen',
   share: 'ShareScreen',
   chat: 'ChatScreen',
@@ -48,6 +51,34 @@ const SCREEN_MAP = {
 
 
 const ProfileScreen = ({navigation}) => {
+  const [name, setName] = useState("");
+const [phone, setPhone] = useState("");
+const[email, setEmail] = useState("");
+
+
+useFocusEffect(
+  useCallback(() => {
+    const loadData = async () => {
+      try {
+        const savedPhone = await AsyncStorage.getItem("phone");
+        const customerName = await AsyncStorage.getItem("fullname");
+        const customerEmail = await AsyncStorage.getItem("email");
+
+        console.log("PROFILE RELOAD ===>", savedPhone, customerName, customerEmail);
+
+        if (savedPhone) setPhone(savedPhone);
+        if (customerName) setName(customerName);
+        if (customerEmail) setEmail(customerEmail);
+      } catch (e) {
+        console.log("Profile load error:", e);
+      }
+    };
+
+    loadData();
+  }, [])
+);
+
+
   const { logout } = useContext(AuthContext);
 const handleItemPress = (id) => {
   console.log('Pressed:', id);
@@ -103,12 +134,17 @@ const handleItemPress = (id) => {
           <View style={styles.profileCard}>
             <View style={styles.profileRow}>
               <View style={styles.avatar}>
-                <Ionicons name="person-outline" size={28} color="#42ffb7" />
+                 <Image
+      source={require('../../../assets/user_indi.png')}
+      style={styles.profileImage}
+      resizeMode="contain"
+    />
               </View>
 
               <View style={{ flex: 1, marginLeft: 14 }}>
-                <Text style={styles.name}>Lakshmi Monika</Text>
-                <Text style={styles.phone}>+91 98765 43210</Text>
+               <Text style={styles.name}>{name || "Guest User"}</Text>
+<Text style={styles.phone}>+91 {phone}</Text>
+<Text style={styles.phone}>{email}</Text>
               </View>
 
              
@@ -129,7 +165,7 @@ const handleItemPress = (id) => {
     image={require('../../../assets/edit.png')}
     label="Edit Profile"
      tintColor="#2de39e"
-
+onPress={() => navigation.navigate("EditProfile")}
   />
   {/* <MenuItem
     image={require('../../../assets/location.png')}
@@ -268,6 +304,12 @@ menuIcon: {
     arrowImage: {
   width: 15,
   height: 15,
+
+},
+
+    profileImage: {
+  width: 25,
+  height: 25,
 
 },
 

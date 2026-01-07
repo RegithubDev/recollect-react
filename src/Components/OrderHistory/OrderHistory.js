@@ -7,6 +7,7 @@ import {
   Image,
   ActivityIndicator,
   FlatList,
+  TouchableOpacity,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { getOrderHistory } from "../../services/auth";
@@ -33,7 +34,7 @@ const MyOrdersScreen = ({ navigation }) => {
         sort: "id",
         direction: "DESC",
       });
-
+console.log("orderhistory",data)
       // data should be array (content)
       const list = data || [];
 
@@ -50,27 +51,40 @@ const MyOrdersScreen = ({ navigation }) => {
     }
   };
 
-  const renderStatus = status => {
-    if (status === "completed") {
-      return (
-        <View style={[styles.statusPill, styles.completed]}>
-          <Ionicons name="checkmark-circle" size={16} color="#2ED573" />
-          <Text style={styles.statusText}> Completed</Text>
-        </View>
-      );
-    }
+const renderStatus = status => {
+  let pillStyle = styles.scheduled;
+  let label = status;
 
-    return (
-      <View style={[styles.statusPill, styles.scheduled]}>
-        <Text style={styles.statusText}> Scheduled</Text>
-      </View>
-    );
-  };
+  if (status === "completed") {
+    pillStyle = styles.completed;
+    label = "Completed";
+  } else if (status === "cancelled") {
+    pillStyle = styles.cancelled;
+    label = "Cancelled";
+  } else if (status === "open") {
+    pillStyle = styles.scheduled;
+    label = "Open";
+  }
 
-  const renderItem = ({ item }) => {
-    const isBio = item.type === "biowaste";
+  return (
+    <View style={[styles.statusPill, pillStyle]}>
+      <Text style={styles.statusText}>{label}</Text>
+    </View>
+  );
+};
 
-    return (
+const renderItem = ({ item }) => {
+  const isBio = item.type === "biowaste";
+
+  return (
+    <TouchableOpacity
+      activeOpacity={0.8}
+      onPress={() =>
+        navigation.navigate("OrderSummary", {
+          orderId: item.id,  
+        })
+      }
+    >
       <View style={styles.card}>
         <View style={styles.topRow}>
           <View style={styles.leftRow}>
@@ -90,35 +104,41 @@ const MyOrdersScreen = ({ navigation }) => {
               />
             </View>
 
-            <View>
-              <Text style={styles.typeText}>
-                {isBio ? "DH Waste" : "Scrap"}
-              </Text>
+           <View>
+  <Text style={styles.typeText}>
+    {isBio ? "DH Waste" : "Scrap"}
+  </Text>
+  <Text style={styles.orderIdText}>
+   {item.code}
+  </Text>
+  {/* <Text style={styles.dateText}>
+    {new Date(item.scheduleDate).toDateString()}
+  </Text> */}
+    <View style={styles.row}>
+       <Image
+                              source={require('../../../assets/calender.png')}
+                              style={styles.ordersIcon}
+                            />
+        <Text style={styles.date}>
+          {new Date(item.scheduleDate).toDateString()}
+        </Text>
+      </View>
 
-              <Text style={styles.dateText}>
-                {new Date(item.scheduleDate).toDateString()}
-              </Text>
-            </View>
+</View>
+
           </View>
 
           {renderStatus(item.status)}
         </View>
 
         <View style={styles.bottomRow}>
-          {/* <Text style={styles.weightText}>
-            Weight:{" "}
-            <Text style={styles.bold}>
-              {item.weight ? `${item.weight} kg` : "--"}
-            </Text>
-          </Text> */}
-
-          {item.amount && (
-            <Text style={styles.amount}>+₹{item.amount}</Text>
-          )}
+          {item.amount && <Text style={styles.amount}>+₹{item.amount}</Text>}
         </View>
       </View>
-    );
-  };
+    </TouchableOpacity>
+  );
+};
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -127,24 +147,55 @@ const MyOrdersScreen = ({ navigation }) => {
         <Text style={styles.subtitle}>Track all your waste pickups</Text>
       </View>
 
-      <FlatList
-        data={orders}
-        keyExtractor={item => item.id?.toString()}
-        renderItem={renderItem}
-        contentContainerStyle={{ paddingBottom: 60 }}
-        showsVerticalScrollIndicator={false}
-        onEndReached={loadOrders}
-        onEndReachedThreshold={0.4}
-        ListFooterComponent={
-          loadingMore ? (
-            <ActivityIndicator
-              size="large"
-              color="#2ED573"
-              style={{ marginVertical: 20 }}
-            />
-          ) : null
-        }
+  <FlatList
+  data={orders}
+  keyExtractor={item => item.id?.toString()}
+  renderItem={renderItem}
+  showsVerticalScrollIndicator={false}
+  onEndReached={loadOrders}
+  onEndReachedThreshold={0.4}
+  contentContainerStyle={{ flexGrow: 1 }}
+
+  ListEmptyComponent={
+    !loadingMore && (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          paddingHorizontal: 20,
+        }}
+      >
+        <Text style={{ color: "#FFFFFF", fontSize: 20, fontWeight: "700" }}>
+          No pickups yet
+        </Text>
+
+        <Text
+          style={{
+            marginTop: 8,
+            color: "#9CA3AF",
+            fontSize: 14,
+            textAlign: "center",
+          }}
+        >
+          Your pickup history will appear here once you start booking.
+        </Text>
+      </View>
+    )
+  }
+
+  ListFooterComponent={
+    loadingMore ? (
+      <ActivityIndicator
+        size="large"
+        color="#2ED573"
+        style={{ marginVertical: 20 }}
       />
+    ) : null
+  }
+/>
+
+
     </SafeAreaView>
   );
 };
@@ -164,12 +215,26 @@ const styles = StyleSheet.create({
     marginTop: '13%',
     // marginBottom: 20,
   },
-
+orderIdText: {
+  color: "#9CA3AF",
+  fontSize: 12,
+  marginTop: 4,
+},
+   ordersIcon:{
+ width: 18,
+    height: 18,
+    tintColor: '#1AA65B',
+  },
+   row: { flexDirection: "row", alignItems: "center", marginTop: 4 },
+     date: { marginLeft: 6, color: "#ffffffff" },
   title: {
     fontSize: 26,
     fontFamily: 'Poppins-SemiBold',
     color: '#FFFFFF',
   },
+cancelled: {
+  backgroundColor: "#FF4D4D",
+},
 
   subtitle: {
     marginTop: 4,

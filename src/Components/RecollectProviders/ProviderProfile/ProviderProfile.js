@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -7,14 +7,33 @@ import {
   SafeAreaView,
   TouchableOpacity,
   ScrollView,
-  Alert
+  Alert,
+  Image
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { AuthContext } from "../../../context/AuthContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function ProviderProfile() {
   const { logout } = useContext(AuthContext);
 const navigation = useNavigation();
+const [name, setName] = useState("");
+const [email, setEmail] = useState("");
+const [phone, setPhone] = useState("");
+
+useEffect(() => {
+  const loadProfile = async () => {
+    const storedName  = await AsyncStorage.getItem("providerName");
+    const storedEmail = await AsyncStorage.getItem("providerEmail");
+    const storedPhone = await AsyncStorage.getItem("providerMobile");
+
+    setName(storedName || "");
+    setEmail(storedEmail || "");
+    setPhone(storedPhone || "");
+  };
+
+  loadProfile();
+}, []);
 
 
   const handleLogout = () => {
@@ -44,13 +63,16 @@ const navigation = useNavigation();
         <View style={styles.card}>
           <View style={styles.avatarWrap}>
             <View style={styles.avatarCircle}>
-              <Ionicons name="person-outline" size={36} color="#fff" />
+               <Image
+                 source={require('../../../../assets/user_indi.png')}
+                 style={styles.avatar}
+                 resizeMode="contain"
+               />
             </View>
-            <Text style={styles.title}>Profile</Text>
+           
           </View>
 
-          <Text style={styles.name}>Alex Picker</Text>
-          <Text style={styles.role}>Waste Collection Specialist</Text>
+       <Text style={styles.name}>{name}</Text>
 
           {/* Rating */}
           <View style={styles.rating}>
@@ -81,18 +103,31 @@ const navigation = useNavigation();
           </View>
 
           {/* CONTACT */}
-          <View style={styles.infoRow}>
-            <Ionicons name="mail-outline" size={20} color="#19A463" />
-            <Text style={styles.infoText}>alex.picker@recollect.com</Text>
-          </View>
+       <View style={styles.infoRow}>
+  {/* <Ionicons name="mail-outline" size={20} color="#19A463" /> */}
+    <Image
+                 source={require('../../../../assets/email.png')}
+                 style={styles.arrowImage}
+                 resizeMode="contain"
+               />
+  <Text style={styles.infoText}>{email}</Text>
+</View>
+
+<View style={styles.infoRow}>
+ <Image
+                 source={require('../../../../assets/phone-call.png')}
+                 style={styles.arrowImage}
+                 resizeMode="contain"
+               />
+  <Text style={styles.infoText}>{phone}</Text>
+</View>
 
           <View style={styles.infoRow}>
-            <Ionicons name="call-outline" size={20} color="#19A463" />
-            <Text style={styles.infoText}>+917663553637</Text>
-          </View>
-
-          <View style={styles.infoRow}>
-            <Ionicons name="location-outline" size={20} color="#19A463" />
+        <Image
+                 source={require('../../../../assets/location.png')}
+                 style={styles.arrowImage}
+                 resizeMode="contain"
+               />
             <Text style={styles.infoText}> Hyderabad City, Telanagana</Text>
           </View>
         </View>
@@ -100,21 +135,45 @@ const navigation = useNavigation();
         {/* MENU LIST */}
         <View style={styles.menu}>
           <TouchableOpacity style={styles.menuItem}>
-            <Ionicons name="settings-outline" size={20} color="#111" />
+            <Image
+                 source={require('../../../../assets/settings.png')}
+                 style={styles.iconImage}
+                 resizeMode="contain"
+               />
             <Text style={styles.menuText}>Settings</Text>
-            <Ionicons name="chevron-forward" size={18} color="#999" />
+             <Image
+                 source={require('../../../../assets/right.png')}
+                 style={styles.arrowImage}
+                 resizeMode="contain"
+               />
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem}>
-            <Ionicons name="shield-outline" size={20} color="#111" />
+             <Image
+                 source={require('../../../../assets/insurance.png')}
+                 style={styles.iconImage}
+                 resizeMode="contain"
+               />
             <Text style={styles.menuText}>Privacy & Security</Text>
-            <Ionicons name="chevron-forward" size={18} color="#999" />
+            <Image
+                 source={require('../../../../assets/right.png')}
+                 style={styles.arrowImage}
+                 resizeMode="contain"
+               />
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem}>
-            <Ionicons name="help-circle-outline" size={20} color="#111" />
+             <Image
+                 source={require('../../../../assets/costumer-service.png')}
+                 style={styles.iconImage}
+                 resizeMode="contain"
+               />
             <Text style={styles.menuText}>Help & Support</Text>
-            <Ionicons name="chevron-forward" size={18} color="#999" />
+           <Image
+                 source={require('../../../../assets/right.png')}
+                 style={styles.arrowImage}
+                 resizeMode="contain"
+               />
           </TouchableOpacity>
         </View>
 
@@ -148,7 +207,21 @@ const styles = StyleSheet.create({
     padding: 18,
     elevation: 6
   },
+    arrowImage: {
+  width: 15,
+  height: 15,
 
+},
+    avatar: {
+  width: 30,
+  height: 30,
+tintColor:'#fff'
+},
+
+iconImage: {
+ width: 25,
+  height: 25,
+},
   avatarWrap: { alignItems: "center", marginBottom: 8 },
 
   avatarCircle: {

@@ -30,7 +30,9 @@ import PickupSuccessScreen from "../Components/SelectCategory/PickupSuccess";
 import SelectDHWasteScreen from "../Components/SelectCategory/SelectItemScreens/DHWasteItemsUI";
 import SelectScrapScreen from '../Components/SelectCategory/SelectItemScreens/ScrapItemsUI';
 import EditAddressScreen from '../Components/Addresses/EditAddresses';
-
+import EditProfileScreen from '../Components/Profile/EditProfile/EditProfile';
+import CouponsScreen from '../Components/Profile/Coupons/Coupons';
+import OrderSummary from '../Components/OrderHistory/OrderSummary';
 const Stack = createNativeStackNavigator();
 
 const AppNavigator = () => {
@@ -86,10 +88,13 @@ const AppNavigator = () => {
           <Stack.Screen name="Scrap" component={ScrapMoneyScreen} />
           <Stack.Screen name="Address" component={MyAddressesScreen} />
           <Stack.Screen name="History" component={MyOrdersScreen} />
+            <Stack.Screen name="Coupons" component={CouponsScreen} />
+             <Stack.Screen name="OrderSummary" component={OrderSummary} />
           <Stack.Screen name="SelectItem" component={SelectItemScreen} />
           <Stack.Screen name="ConfirmPickup" component={ConfirmPickupScreen} />
           <Stack.Screen name="Schedule" component={SchedulePickupScreen} />
           <Stack.Screen name="SelectScrap" component={SelectScrapScreen} />
+             <Stack.Screen name="EditProfile" component={EditProfileScreen} />
 <Stack.Screen name="SelectDHWaste" component={SelectDHWasteScreen} />
 <Stack.Screen
   name="AddAddress"

@@ -1,150 +1,273 @@
-// import React from 'react';
-// import {
-//   View,
-//   Text,
-//   StyleSheet,
-//   SafeAreaView,
-//   TouchableOpacity,
-//   Image,
-//   ScrollView,
-//   Dimensions,
-// } from 'react-native';
-// import LinearGradient from 'react-native-linear-gradient';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+} from "react-native";
 
-// const { width } = Dimensions.get('window');
+const categories = ["All", "Food", "Shopping", "Transport"];
 
-// const COUPONS = [
-//   require('../assets/tata1mg.png'),
-//   require('../assets/adidas.png'),
-//   require('../assets/amazon.png'),
-//   require('../assets/firstcry.png'),
-//   require('../assets/flipkart.png'),
-//   require('../assets/friends.png'),
-//   require('../assets/healthkart.png'),
-//   require('../assets/medplus.png'),
-//   require('../assets/netmeds.png'),
-//   require('../assets/nike.png'),
-//   require('../assets/fashion.png'),
-// ];
+const featured = {
+  title: "Complete Eco Starter Kit",
+  brand: "ECOESSENTIALS",
+  desc: "Get everything you need to start your sustainable journey.",
+  discount: "40% OFF",
+  expires: "2 days",
+  points: 500,
+  image:
+    "https://images.pexels.com/photos/3811853/pexels-photo-3811853.jpeg",
+};
 
-// const CouponsAndOffersScreen = ({ navigation }) => {
-//   return (
-//     <LinearGradient colors={['#2d330f', '#000']} style={styles.container}>
-//       <SafeAreaView style={{ flex: 1 }}>
-//         {/* Header */}
-//         <View style={styles.header}>
-//           <TouchableOpacity onPress={() => navigation.goBack()}>
-//             <Image
-//               source={require('../assets/back.png')}
-//               style={styles.backIcon}
-//             />
-//           </TouchableOpacity>
-//           <Text style={styles.headerTitle}>Coupons And Offers</Text>
-//         </View>
+const coupons = [
+  {
+    id: 1,
+    title: "Fresh Organic Produce",
+    brand: "GREEN MARKET",
+    tag: "New",
+    category: "Food",
+    discount: "20% OFF",
+    days: "3 days left",
+    points: 150,
+    image:
+      "https://images.pexels.com/photos/3737643/pexels-photo-3737643.jpeg",
+  },
+  {
+    id: 2,
+    title: "Sustainable Fashion",
+    brand: "ECOWEAR",
+    category: "Shopping",
+    discount: "₹200 OFF",
+    days: "5 days left",
+    points: 300,
+    image:
+      "https://images.pexels.com/photos/298864/pexels-photo-298864.jpeg",
+  },
+];
 
-//         <ScrollView showsVerticalScrollIndicator={false}>
-//           {/* Coupon Illustration */}
-//           <View style={styles.illustrationWrapper}>
-//             <Image
-//               source={require('../assets/coupon.png')}
-//               style={styles.couponImage}
-//               resizeMode="contain"
-//             />
-//           </View>
+export default function CouponsScreen() {
+  const [active, setActive] = useState("All");
 
-//           {/* Coupon Grid */}
-//           <View style={styles.couponCard}>
-//             <View style={styles.grid}>
-//               {COUPONS.map((item, index) => (
-//                 <View key={index} style={styles.couponTile}>
-//                   <Image source={item} style={styles.couponLogo} />
-//                 </View>
-//               ))}
-//             </View>
-//           </View>
+  const filtered =
+    active === "All" ? coupons : coupons.filter(c => c.category === active);
 
-//           {/* Bottom Wave */}
-//           <View style={styles.bottomWave} />
-//         </ScrollView>
-//       </SafeAreaView>
-//     </LinearGradient>
-//   );
-// };
+  return (
+    <ScrollView style={styles.container}>
+      {/* Header */}
+      <Text style={styles.header}>Featured Offer</Text>
 
-// export default CouponsAndOffersScreen;
+      {/* Featured Card */}
+      <View style={styles.featuredCard}>
+        <Image source={{ uri: featured.image }} style={styles.featuredImage} />
 
+        <View style={styles.featureContent}>
+          <Text style={styles.brand}>{featured.brand}</Text>
+          <Text style={styles.title}>{featured.title}</Text>
+          <Text style={styles.desc}>{featured.desc}</Text>
 
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//   },
+          <View style={styles.row}>
+            <Text style={styles.discount}>{featured.discount}</Text>
+            <Text style={styles.expire}>⏱ Expires in {featured.expires}</Text>
+          </View>
 
-//   /* Header */
-//   header: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     paddingHorizontal: 16,
-//     paddingVertical: 12,
-//   },
-//   backIcon: {
-//     width: 26,
-//     height: 26,
-//     tintColor: '#fff',
-//   },
-//   headerTitle: {
-//     color: '#fff',
-//     fontSize: 20,
-//     fontWeight: '600',
-//     marginLeft: 12,
-//   },
+          <View style={styles.rowBetween}>
+            <Text style={styles.points}>{featured.points} pts</Text>
+            <TouchableOpacity style={styles.redeemBtn}>
+              <Text style={styles.redeemTxt}>Redeem Now</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
 
-//   /* Illustration */
-//   illustrationWrapper: {
-//     alignItems: 'center',
-//     marginVertical: 30,
-//   },
-//   couponImage: {
-//     width: width * 0.8,
-//     height: 220,
-//   },
+      {/* Categories */}
+      <Text style={styles.header}>Browse Coupons</Text>
 
-//   /* Coupon Card */
-//   couponCard: {
-//     backgroundColor: '#1c1c1c',
-//     borderTopLeftRadius: 26,
-//     borderTopRightRadius: 26,
-//     paddingVertical: 30,
-//     paddingHorizontal: 20,
-//   },
+      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        {categories.map(cat => (
+          <TouchableOpacity
+            key={cat}
+            onPress={() => setActive(cat)}
+            style={[
+              styles.category,
+              active === cat && styles.categoryActive,
+            ]}
+          >
+            <Text
+              style={[
+                styles.categoryText,
+                active === cat && styles.categoryTextActive,
+              ]}
+            >
+              {cat}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
 
-//   grid: {
-//     flexDirection: 'row',
-//     flexWrap: 'wrap',
-//     justifyContent: 'space-between',
-//   },
+      {/* Coupons List */}
+      <FlatList
+        data={filtered}
+        keyExtractor={item => item.id.toString()}
+        scrollEnabled={false}
+        renderItem={({ item }) => (
+          <View style={styles.card}>
+            <Image source={{ uri: item.image }} style={styles.cardImage} />
 
-//   couponTile: {
-//     width: '30%',
-//     height: 70,
-//     backgroundColor: '#fff',
-//     borderRadius: 14,
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     marginBottom: 16,
-//   },
+            <View style={styles.cardContent}>
+              <View style={styles.tagsRow}>
+                {item.tag && (
+                  <View style={styles.tag}>
+                    <Text style={styles.tagText}>{item.tag}</Text>
+                  </View>
+                )}
+                <View style={styles.catTag}>
+                  <Text style={styles.catText}>{item.category}</Text>
+                </View>
+              </View>
 
-//   couponLogo: {
-//     width: 60,
-//     height: 40,
-//     resizeMode: 'contain',
-//   },
+              <Text style={styles.brand}>{item.brand}</Text>
+              <Text style={styles.title}>{item.title}</Text>
 
-//   /* Bottom Wave */
-//   bottomWave: {
-//     height: 60,
-//     backgroundColor: '#7ea640',
-//     borderTopLeftRadius: 60,
-//     borderTopRightRadius: 60,
-//     marginTop: 20,
-//   },
-// });
+              <Text style={styles.time}>⏱ {item.days}</Text>
+
+              <View style={styles.rowBetween}>
+                <Text style={styles.points}>{item.points} pts</Text>
+
+                <TouchableOpacity style={styles.redeemSmall}>
+                  <Text style={styles.redeemSmallTxt}>Redeem</Text>
+                </TouchableOpacity>
+
+                <View style={styles.discountBadge}>
+                  <Text style={styles.discountBadgeTxt}>{item.discount}</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+        )}
+      />
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: "#0b1410", padding: 16 },
+
+  header: { fontSize: 18, fontWeight: "700", marginVertical: 10, color: "#ffffffff" ,marginTop:'12%'},
+
+  featuredCard: {
+    borderRadius: 18,
+    backgroundColor: "#fff",
+    overflow: "hidden",
+    marginBottom: 18,
+  },
+
+  featuredImage: { width: "100%", height: 180 },
+
+  featureContent: { padding: 14 },
+
+  brand: { color: "#7B8C6C", fontWeight: "700" },
+
+  title: { fontSize: 18, fontWeight: "800", color: "#1C2C20", marginTop: 2 },
+
+  desc: { color: "#6F7F73", marginVertical: 6 },
+
+  discount: { fontSize: 20, fontWeight: "900", color: "#1E7F46" },
+
+  expire: { marginLeft: 10, color: "#6E6E6E" },
+
+  row: { flexDirection: "row", alignItems: "center" },
+
+  rowBetween: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 10,
+  },
+
+  points: { fontWeight: "800", color: "#1C3E2D" },
+
+  redeemBtn: {
+    backgroundColor: "#2E7D32",
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 20,
+  },
+
+  redeemTxt: { color: "#fff", fontWeight: "700" },
+
+  category: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#d9e2d4",
+    marginRight: 10,
+  },
+
+  categoryActive: {
+    backgroundColor: "#2E7D32",
+    borderColor: "#2E7D32",
+  },
+
+  categoryText: { color: "#2E7D32", fontWeight: "600" },
+
+  categoryTextActive: { color: "#fff" },
+
+  card: {
+    borderRadius: 18,
+    backgroundColor: "#fff",
+    overflow: "hidden",
+    marginVertical: 10,
+  },
+
+  cardImage: { height: 150, width: "100%" },
+
+  cardContent: { padding: 14 },
+
+  tagsRow: { flexDirection: "row" },
+
+  tag: {
+    backgroundColor: "#C8F1C4",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 10,
+    marginRight: 6,
+  },
+
+  tagText: { color: "#1F7D35", fontWeight: "700" },
+
+  catTag: {
+    backgroundColor: "#E5EFE3",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 10,
+  },
+
+  catText: { color: "#3E5F42" },
+
+  time: { color: "#6A6A6A", marginVertical: 6 },
+
+  discountBadge: {
+    backgroundColor: "#F0FFF4",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 18,
+  },
+
+  discountBadgeTxt: {
+    color: "#1C7F40",
+    fontWeight: "900",
+  },
+
+  redeemSmall: {
+    backgroundColor: "#E6F3EA",
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 20,
+  },
+
+  redeemSmallTxt: { color: "#2E7D32", fontWeight: "700" },
+});

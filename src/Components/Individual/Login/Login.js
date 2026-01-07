@@ -32,9 +32,10 @@ const tempToken =
 console.log("temptoken",tempToken);
 
 const customerId = response?.data?.id ?? null;
-
+const fullName = response?.data?.fullName;
+const email = response?.data?.email;
 console.log("token", tempToken);
-console.log("customerId", customerId);
+console.log("customerId", customerId,email);
 
 
    if (!tempToken || !customerId) {
@@ -44,6 +45,10 @@ console.log("customerId", customerId);
 
       await AsyncStorage.setItem(TOKEN_KEY, tempToken);
       await AsyncStorage.setItem("customerId", customerId.toString());
+      await AsyncStorage.setItem("phone", phone);
+      await AsyncStorage.setItem("fullname", fullName);
+ await AsyncStorage.setItem("email", email);
+      console.log("phonemobile",phone,fullName)
       navigation.navigate('OtpScreen', { phone, tempToken });
     } catch (error) {
       Alert.alert('Error', 'Failed to send OTP');

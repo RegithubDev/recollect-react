@@ -43,7 +43,7 @@ const WalletScreen = () => {
 
 
             <TouchableOpacity style={styles.bankBtn}>
-              <Ionicons name="card-outline" size={18} color="#fff" />
+              {/* <Ionicons name="card-outline" size={18} color="#fff" /> */}
               <Text style={styles.bankText}>Add Bank</Text>
             </TouchableOpacity>
           </View>

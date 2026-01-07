@@ -84,31 +84,39 @@ console.log("dhwasteparams",regionId);
       <View style={styles.content}>
         {/* LEFT CATEGORIES */}
         <View style={styles.categories}>
-          <ScrollView showsVerticalScrollIndicator={false}>
-            {categories.map((cat) => (
-              <TouchableOpacity
-                key={cat.id}
-                onPress={() => setActiveCategoryId(cat.id)}
-                style={[
-                  styles.categoryBox,
-                  { opacity: activeCategoryId === cat.id ? 1 : 0.35 },
-                ]}
-              >
-                <Image
-                  source={require("../../../../assets/hazard.png")}
-                  style={styles.categoryIcon}
-                />
+     {/* CATEGORIES (HORIZONTAL) */}
+<ScrollView
+  horizontal
+  showsHorizontalScrollIndicator={false}
+  style={{ marginBottom: 26 }}
+>
+  {categories.map((cat) => (
+    <TouchableOpacity
+      key={cat.id}
+      onPress={() => setActiveCategoryId(cat.id)}
+      style={[
+        styles.categoryBox,
+        { opacity: activeCategoryId === cat.id ? 1 : 0.35 },
+      ]}
+    >
+      <Image
+        source={require("../../../../assets/hazard.png")}
+        style={styles.categoryIcon}
+      />
 
-                <Text style={styles.catText}>
-                  {cat.category.replace(" ", "\n")}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+      <Text style={styles.catText}>
+        {cat.category}
+      </Text>
+    </TouchableOpacity>
+  ))}
+</ScrollView>
+
         </View>
 
         {/* ITEMS */}
-        <ScrollView>
+        <ScrollView vertical showsVerticalScrollIndicator={true}
+
+  style={{ marginBottom: '28%' }}>
           {activeCategory?.types?.map((item) => (
             <LinearGradient key={item.id} colors={GRADIENTS.yellow} style={styles.itemCard}>
               <Image
@@ -215,11 +223,14 @@ scrapPrice: {
   },
 categoryBox: {
   borderRadius: 18,
-  paddingVertical: 22,
+  paddingVertical: 16,
+  paddingHorizontal: 14,
   alignItems: 'center',
-  width: 80,
-  marginBottom: 14, 
+  justifyContent: 'center',
+  marginRight: 12,
+  backgroundColor: '#fff',
 },
+
 
 scrapToggle: {
   flexDirection: 'row',
@@ -328,29 +339,11 @@ catText: {
   },
 
  content: {
-  flex: 1,              // 🔥 REQUIRED
-  flexDirection: 'row',
+  flex: 1,            
+  flexDirection: 'column', 
   paddingTop: 28,
   paddingHorizontal: 12,
 },
-
-
-  categories: {
-    width: 90,
-    alignItems: 'center',
-     height: '100%',       
-  },
-
-
-
-
-//   categoryBox: {
-//     borderRadius: 16,
-//     paddingVertical: 12,
-//     paddingHorizontal: 8,
-//     marginBottom: 14,
-//     width: 80,
-//   },
 
   catText: {
     fontSize: 13,
@@ -361,10 +354,11 @@ catText: {
   itemCard: {
     flexDirection: 'row',
     alignItems: 'center',
+    // alignSelf: 'center',  
     borderRadius: 22,
     padding: 18,
     marginBottom: 14,
-    width: 310,
+    width: 360,
   },
 
   itemImage: {

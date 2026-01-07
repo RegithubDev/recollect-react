@@ -44,6 +44,19 @@ const HomeScreen = ({ navigation }) => {
   const [loadingServices, setLoadingServices] = useState(false);
   const [servicesError, setServicesError] = useState(null);
   const { userToken } = useContext(AuthContext);
+const [customerName, setCustomerName] = useState("");
+useEffect(() => {
+  const loadUser = async () => {
+    try {
+      const savedName = await AsyncStorage.getItem("fullname");
+      if (savedName) setCustomerName(savedName);
+    } catch (e) {
+      console.log("Failed to load username", e);
+    }
+  };
+
+  loadUser();
+}, []);
 
  useEffect(() => {
     let mounted = true;
@@ -83,7 +96,10 @@ return (
       <View style={styles.headerRow}>
         <View>
           <Text style={styles.welcomeText}>Welcome</Text>
-          <Text style={styles.userName}>Lakshmi Monika 👋</Text>
+         <Text style={styles.userName}>
+  {customerName ? customerName : "Guest"} 👋
+</Text>
+
         </View>
 
         <View style={styles.bellWrap}>

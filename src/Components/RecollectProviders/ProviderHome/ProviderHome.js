@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,45 +6,89 @@ import {
   SafeAreaView,
   TouchableOpacity,
   TextInput,
-  FlatList
+  FlatList,
+  Image,Alert 
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { getAssignableOrders } from "../../../services/Providerauth/auth";
+import { getAssignableOrders, selfAssignOrder } from "../../../services/Providerauth/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 
-const ORDERS = [
-  {
-    id: "1",
-    name: "John Smith",
-    orderId: "#1234",
-    address: "123 Green Street, Eco City, EC 12345",
-    type: "Recyclable Plastics",
-    time: "Today, 2:00 PM",
-    status: "Pending"
-  },
-  {
-    id: "2",
-    name: "Sarah Johnson",
-    orderId: "#1235",
-    address: "456 Oak Avenue, Greenville, GV 67890",
-    type: "Electronic Waste",
-    time: "Today, 4:30 PM",
-    status: "Pending"
-  }
-];
+
 
 export default function ProviderHome() {
   const [orders, setOrders] = useState([]);
 const [loading, setLoading] = useState(true);
+const [providerName, setProviderName] = useState("");
+const [greeting, setGreeting] = useState("");
+const [orderCount, setOrderCount] = useState(0);
 
-useEffect(() => {
-  fetchOrders();
-}, []);
+
+useFocusEffect(
+  useCallback(() => {
+    const loadData = async () => {
+      const name = await AsyncStorage.getItem("providerName");
+      setProviderName(name || "");
+
+      const hour = new Date().getHours();
+
+      if (hour >= 5 && hour < 12) {
+        setGreeting("Good Morning");
+      } else if (hour >= 12 && hour < 17) {
+        setGreeting("Good Afternoon");
+      } else if (hour >= 17 && hour <= 23) {
+        setGreeting("Good Evening");
+      } else {
+        setGreeting("Hello");
+      }
+
+      fetchOrders();
+    };
+
+    loadData();
+
+    // cleanup optional
+    return () => {};
+  }, [])
+);
+
+const handleAcceptOrder = async (id) => {
+  try {
+    setLoading(true);
+
+    const res = await selfAssignOrder(id);
+    console.log("ACCEPT RESPONSE:", res.data);
+
+    Alert.alert(
+      "Success",
+      "Order accepted successfully.",
+      [{ text: "OK" }]
+    );
+
+    fetchOrders();   // refresh orders
+  } catch (err) {
+    console.log("ACCEPT ERROR:", err?.response?.data || err);
+
+    Alert.alert(
+      "Failed",
+      err?.response?.data?.error || "Something went wrong. Please try again."
+    );
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
+
 
 const fetchOrders = async () => {
   try {
     const res = await getAssignableOrders();
     console.log("orderlistresponse:",res);
+     const count = res?.data?.data?.totalElements || 0;
     setOrders(res.data?.data?.content || []);
+    setOrderCount(count);
   } catch (err) {
     console.log("ORDER LIST ERROR", err?.response?.data || err);
   } finally {
@@ -65,7 +109,10 @@ const fetchOrders = async () => {
      <Text style={styles.orderId}>Order {item.code}</Text>
 
       <View style={styles.row}>
-        <Ionicons name="location-outline" size={18} color="#19A463" />
+       <Image
+                   source={require('../../../../assets/locate.png')}
+                   style={styles.orderIcon}
+                 />
         {/* <Text style={styles.detailText}>{item.address}</Text> */}
         <Text style={styles.detailText}>
   {item.residenceDetails} {item.landmark}
@@ -73,19 +120,29 @@ const fetchOrders = async () => {
       </View>
 
       <View style={styles.row}>
-        <Ionicons name="cube-outline" size={18} color="#19A463" />
+        <Image
+                   source={require('../../../../assets/menu.png')}
+                   style={styles.orderIcon}
+                 />
        <Text style={styles.detailText}>{item.type}</Text>
       </View>
 
       <View style={styles.row}>
-        <Ionicons name="time-outline" size={18} color="#19A463" />
+        <Image
+                   source={require('../../../../assets/calender.png')}
+                   style={styles.orderIcon}
+                 />
        <Text style={styles.detailText}>{item.scheduleDate}</Text>
       </View>
 
       <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.acceptBtn}>
-          <Text style={styles.acceptText}>Accept Order</Text>
-        </TouchableOpacity>
+     <TouchableOpacity
+  style={styles.acceptBtn}
+  onPress={() => handleAcceptOrder(item.id)}
+>
+  <Text style={styles.acceptText}>Accept Order</Text>
+</TouchableOpacity>
+
 
         <TouchableOpacity style={styles.outlineBtn}>
           <Text style={styles.outlineText}>View Details</Text>
@@ -100,12 +157,17 @@ const fetchOrders = async () => {
       {/* HEADER */}
       <View style={styles.header}>
         <View>
-          <Text style={styles.smallText}>Good Morning,</Text>
-          <Text style={styles.name}>Alex Picker</Text>
+         <Text style={styles.smallText}>{greeting},</Text>
+
+     <Text style={styles.name}>{providerName}</Text>
+
         </View>
 
         <TouchableOpacity style={styles.bell}>
-          <Ionicons name="notifications-outline" size={24} color="#19A463" />
+        <Image
+                   source={require('../../../../assets/notification.png')}
+                   style={styles.orderIcon}
+                 />
         </TouchableOpacity>
       </View>
 
@@ -124,48 +186,46 @@ const fetchOrders = async () => {
 
       {/* SEARCH BAR */}
       <View style={styles.searchBox}>
-        <Ionicons name="search" size={20} color="#9aa4b2" />
+        <Image
+                   source={require('../../../../assets/search.png')}
+                   style={styles.searchicon}
+                 />
         <TextInput
           placeholder="Search orders..."
           style={styles.searchInput}
         />
-        <TouchableOpacity style={styles.filterBtn}>
+        {/* <TouchableOpacity style={styles.filterBtn}>
           <Ionicons name="filter-outline" size={20} color="#1a1a1a" />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       {/* ORDER LIST */}
       <View style={styles.listHeader}>
         <Text style={styles.sectionTitle}>Order Requests</Text>
-        <Text style={styles.count}>4 orders</Text>
+       <Text style={styles.count}>{orderCount} orders</Text>
+
       </View>
 
-      <FlatList
-      data={orders}
+     <FlatList
+  data={orders}
+  keyExtractor={(item) => item.id}
+  renderItem={renderOrder}
+  contentContainerStyle={{ paddingBottom: 100, flexGrow: 1 }}
+  showsVerticalScrollIndicator={false}
 
-        keyExtractor={(item) => item.id}
-        renderItem={renderOrder}
-        contentContainerStyle={{ paddingBottom: 100 }}
-        showsVerticalScrollIndicator={false}
-      />
-
-      {/* BOTTOM NAV (STATIC UI) */}
-      <View style={styles.bottomBar}>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="home" size={22} color="#19A463" />
-          <Text style={styles.navActive}>Home</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="time-outline" size={22} color="#8b98a8" />
-          <Text style={styles.navText}>History</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="person-outline" size={22} color="#8b98a8" />
-          <Text style={styles.navText}>Profile</Text>
-        </TouchableOpacity>
+  ListEmptyComponent={
+    !loading && (
+      <View style={{ alignItems: "center", marginTop: 40 }}>
+        <Text style={{ fontSize: 16, color: "#777" }}>
+          No orders...
+        </Text>
       </View>
+    )
+  }
+/>
+
+
+    
     </SafeAreaView>
   );
 }
@@ -192,7 +252,21 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 30
   },
-
+  bellIcon: {
+    width: 22,
+    height: 22,
+    tintColor: '#2DE39E',
+  },
+  orderIcon:{
+ width: 18,
+    height: 18,
+    tintColor: '#19A463',
+  },
+  searchicon:{
+ width: 18,
+    height: 18,
+    tintColor: '#000000ff',
+  },
   statsRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -200,14 +274,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20
   },
 
-  statBox: {
-    flex: 1,
-    backgroundColor: "#183528",
-    borderColor:'#2de39e',
-    marginHorizontal: 6,
-    borderRadius: 20,
-    padding: 18
-  },
+statBox: {
+  flex: 1,
+  backgroundColor: "#183528",
+  borderColor: "#2de39e",
+  marginHorizontal: 6,
+  borderRadius: 20,
+  padding: 18,
+  borderWidth: 1.5,
+
+  // iOS shadow
+  shadowColor: "#000",
+  shadowOffset: { width: 0, height: 6 },
+  shadowOpacity: 0.25,
+  shadowRadius: 10,
+
+  // Android shadow
+  elevation: 6,
+},
+
 
   statLabel: { color: "#D8FFE9" },
   statNumber: { color: "#fff", fontSize: 22, fontWeight: "bold" },

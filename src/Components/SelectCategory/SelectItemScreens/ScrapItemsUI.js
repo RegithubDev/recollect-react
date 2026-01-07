@@ -24,8 +24,8 @@ export default function SelectScrapScreen({ navigation, route }) {
   const [activeCategoryId, setActiveCategoryId] = useState(null);
   const [selectedItems, setSelectedItems] = useState([]);
   const [scrapTab, setScrapTab] = useState("SCRAP"); // SCRAP | DISPOSALS
-const { address, regionId } = route.params || {};
-console.log("scrapitemsparams",regionId);
+const { address, regionId,districtId  } = route.params || {};
+console.log("scrapitemsparams",regionId,districtId );
 
   useEffect(() => {
     loadCategories();
@@ -34,8 +34,9 @@ console.log("scrapitemsparams",regionId);
   const loadCategories = async () => {
     try {
       const token = await AsyncStorage.getItem(TOKEN_KEY);
-      const data = await getScrapCategories(token);
+    const data = await getScrapCategories(token, districtId);
 
+console.log("datascrap",data)
       setCategories(data);
       if (data.length > 0) setActiveCategoryId(data[0].id);
     } catch (e) {

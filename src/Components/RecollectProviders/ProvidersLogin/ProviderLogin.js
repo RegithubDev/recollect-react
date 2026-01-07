@@ -36,11 +36,20 @@ const handleProviderLogin = async () => {
     console.log("providerlogin", result);
 
     const token = result?.data?.token;
+  const name = result?.data?.fullName;
+const useremail = result?.data?.email;
+const phone = result?.data?.phoneNumber;
+console.log("email",useremail,phone)
+
+    console.log("name",name);
  console.log("providertoken", token);
     const role = "provider";
 
-    // ⭐ SAVE TOKEN WITH NEW NAME
+    // SAVE TOKEN WITH NEW NAME
     await AsyncStorage.setItem("providerToken", token);
+    await AsyncStorage.setItem("providerName", name);
+     await AsyncStorage.setItem("providerEmail", useremail);
+      await AsyncStorage.setItem("providerMobile", phone);
 const stored = await AsyncStorage.getItem("providerToken");
 console.log("SAVED PROVIDER TOKEN", stored);
     // continue your existing auth flow
@@ -76,7 +85,10 @@ console.log("SAVED PROVIDER TOKEN", stored);
         <View style={styles.card}>
           <View style={styles.cardHeaderRow}>
             <View style={styles.iconCircle}>
-              {/* <Ionicons name="car-outline" size={22} color="#1F8B3A" /> */}
+             <Image
+                           source={require('../../../../assets/providerlog.png')} // replace with your icon
+                           style={styles.searchicon}
+                         />
             </View>
             <View>
               <Text style={styles.cardTitle}>Picker Login</Text>
@@ -105,15 +117,18 @@ console.log("SAVED PROVIDER TOKEN", stored);
   secureTextEntry={!passwordVisible}
   style={styles.input}
 />
-            <TouchableOpacity
-              onPress={() => setPasswordVisible(!passwordVisible)}
-            >
-              <Ionicons
-                name={passwordVisible ? "eye-off" : "eye"}
-                size={22}
-                color="#5a6b7a"
-              />
-            </TouchableOpacity>
+          <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)}>
+  <Image
+    source={
+      passwordVisible
+        ? require("../../../../assets/visible.png")
+        : require("../../../../assets/hidden.png")
+    }
+    style={{ width: 20, height: 20, tintColor: "#5a6b7a" }}
+    resizeMode="contain"
+  />
+</TouchableOpacity>
+
           </View>
 
           <TouchableOpacity>
@@ -165,6 +180,12 @@ logo: {
   height: 62,
   tintColor: '#2de39e',
 },
+
+  searchicon:{
+ width: 28,
+    height: 28,
+    // tintColor: '#000000ff',
+  },
   header: {
     backgroundColor: "#005f31ff",
     paddingTop: 80,

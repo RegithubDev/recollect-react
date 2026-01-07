@@ -106,6 +106,12 @@ if (serviceType === "bio") {
   }
 };
 
+const getScrapPriceText = (item) => {
+  if (!item.payable) return "";
+  const unit = item.kg ? "kg" : "pc";
+  return `₹${item.price}/${unit}`;
+};
+
 
 
 
@@ -229,18 +235,26 @@ if (serviceType === "bio") {
       <View style={styles.selectedBox}>
   <Text style={styles.selectedTitle}>Selected Items</Text>
 
-  {items.map((item) => (
-    <View key={item.id} style={styles.selectedItemRow}>
+{items.map((item) => (
+  <View key={item.id} style={styles.selectedItemRow}>
+    
+    <View style={{ flex: 1 }}>
       <Text style={styles.selectedItemText}>{item.name}</Text>
 
-      <TouchableOpacity
-        style={styles.removeCircle}
-        onPress={() => removeItem(item.id)}
-      >
-        <Text style={styles.removeText}>×</Text>
-      </TouchableOpacity>
+      {item.payable && (
+        <Text style={styles.priceText}>{getScrapPriceText(item)}</Text>
+      )}
     </View>
-  ))}
+
+    <TouchableOpacity
+      style={styles.removeCircle}
+      onPress={() => removeItem(item.id)}
+    >
+      <Text style={styles.removeText}>×</Text>
+    </TouchableOpacity>
+  </View>
+))}
+
 
   <TouchableOpacity
     style={styles.addMoreBtn}
@@ -323,6 +337,12 @@ headerRow: {
   backgroundColor: '#ffffffff',
   borderRadius: 18,
   padding: 14,
+},
+priceText: {
+  fontSize: 13,
+  color: "#2e7d32",
+  marginTop: 2,
+  fontWeight: "600",
 },
 
 altLabel: {

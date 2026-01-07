@@ -41,7 +41,7 @@ const ProviderBottomTabs = () => {
             iconSource = focused
               ? require('../../assets/house.png')
               : require('../../assets/houseoutline.png');
-          } else if (route.name === 'Requests') {
+          } else if (route.name === 'History') {
             iconSource = focused
             ? require('../../assets/orderhistory.png')
               : require('../../assets/orderoutline.png');
@@ -66,7 +66,7 @@ const ProviderBottomTabs = () => {
       })}
     >
       <Tab.Screen name="Pickups" component={ProviderHome} />
-      <Tab.Screen name="Requests" component={ProviderHistory} />
+      <Tab.Screen name="History" component={ProviderHistory} />
       <Tab.Screen name="Earnings" component={EarningsScreen} />
       <Tab.Screen name="Profile" component={ProviderProfile} />
     </Tab.Navigator>

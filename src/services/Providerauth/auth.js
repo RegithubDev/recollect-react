@@ -39,3 +39,38 @@ console.log("token",token);
     }
   );
 };
+export const selfAssignOrder = async (orderId) => {
+  const token = await AsyncStorage.getItem("providerToken");
+
+  return axios.post(
+    `https://dev.recollect.in/api/v1/order/self-assign/${orderId}`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
+export const getOrderHistory = async (page = 0, size = 20) => {
+  try {
+    const token = await AsyncStorage.getItem("providerToken");
+
+    const res = await axios.get(
+      `https://dev.recollect.in/api/v1/order/list-history?size=${size}&page=${page}&sort=id&direction=DESC`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+   
+    return res.data?.data;
+
+  } catch (error) {
+    console.log("ORDER HISTORY ERROR:", error?.response?.data || error.message);
+    throw error;
+  }
+};
