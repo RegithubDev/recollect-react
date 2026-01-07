@@ -28,7 +28,7 @@ const [coords, setCoords] = useState(null);
 const [wardOpen, setWardOpen] = useState(false);
 const [wardItems, setWardItems] = useState([]);
 const [wardLoading, setWardLoading] = useState(true);
-const [residenceType, setResidenceType] = useState("Home");
+const [residenceType, setResidenceType] = useState("");
 const [regionOpen, setRegionOpen] = useState(false);
 const [regionItems, setRegionItems] = useState([]);
 const [regionLoading, setRegionLoading] = useState(true);
@@ -98,41 +98,42 @@ useEffect(() => {
   fetchRegions();
 }, []);
 
-  const loadDetails = async () => {
-    try {
-      setLoading(true);
+const loadDetails = async () => {
+  try {
+    setLoading(true);
 
-      const data = await getCustomerAddressDetails(addressId);
-console.log("addressdata",data)
-  setForm({
-  ...form,
-  id: data.id,
-  customerId: data.customerId,
-  scrapRegionId: data.scrapRegionId,
-  wardId: data.wardId,
-  isScrapService: data.isScrapService,
-  isScrapLocationActive: data.isScrapLocationActive,
-  isBioWasteService: data.isBioWasteService,
-  isBioWasteLocationActive: data.isBioWasteLocationActive,
-  residenceType: data.residenceType || "",
-  residenceDetails: data.residenceDetails || "",
-  landmark: data.landmark || "",
-  latitude: data.latitude?.toString() || "",
-  longitude: data.longitude?.toString() || ""
-});
+    const data = await getCustomerAddressDetails(addressId);
 
-setCoords({
-  latitude: Number(data.latitude),
-  longitude: Number(data.longitude),
-  address: data.residenceDetails || ""
-});
+    setForm({
+      ...form,
+      id: data.id,
+      customerId: data.customerId,
+      scrapRegionId: data.scrapRegionId,
+      wardId: data.wardId,
+      isScrapService: data.isScrapService,
+      isScrapLocationActive: data.isScrapLocationActive,
+      isBioWasteService: data.isBioWasteService,
+      isBioWasteLocationActive: data.isBioWasteLocationActive,
+      residenceType: data.residenceType || "",
+      residenceDetails: data.residenceDetails || "",
+      landmark: data.landmark || "",
+      latitude: data.latitude?.toString() || "",
+      longitude: data.longitude?.toString() || ""
+    });
 
-    } catch (err) {
-      Alert.alert("Error", "Unable to load address");
-    } finally {
-      setLoading(false);
-    }
-  };
+    setCoords({
+      latitude: Number(data.latitude),
+      longitude: Number(data.longitude),
+      address: data.residenceDetails || ""
+    });
+
+  } catch (err) {
+    Alert.alert("Error", "Unable to load address");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     loadDetails();
@@ -344,25 +345,29 @@ const defaultLon = coords?.longitude || 0;
         </Text>
   
         <View style={{ flexDirection: "row", marginBottom: 14 }}>
-          {["Home", "Office", "Others"].map(type => (
-            <TouchableOpacity
-              key={type}
-              onPress={() => setResidenceType(type)}
-              style={[
-                styles.typeBtn,
-                residenceType === type && styles.typeBtnActive
-              ]}
-            >
-              <Text
-                style={[
-                  styles.typeBtnText,
-                  residenceType === type && styles.typeBtnTextActive
-                ]}
-              >
-                {type}
-              </Text>
-            </TouchableOpacity>
-          ))}
+       {["Home", "Office", "Others"].map(type => (
+  <TouchableOpacity
+    key={type}
+    onPress={() => {
+      setResidenceType(type);
+      handleChange("residenceType", type);
+    }}
+    style={[
+      styles.typeBtn,
+      residenceType === type && styles.typeBtnActive
+    ]}
+  >
+    <Text
+      style={[
+        styles.typeBtnText,
+        residenceType === type && styles.typeBtnTextActive
+      ]}
+    >
+      {type}
+    </Text>
+  </TouchableOpacity>
+))}
+
         </View>
  <Text style={{ color: "#fff", marginBottom: 6,marginTop:'2%',fontWeight:'500' }}>
         Ward Name

@@ -27,7 +27,7 @@ const handleProviderLogin = async () => {
     if (!email || !password) return;
 
     const payload = {
-      username: email,
+     username: `+91${email}`,
       password: password,
     };
 
@@ -97,21 +97,32 @@ console.log("SAVED PROVIDER TOKEN", stored);
           </View>
 
           {/* Email Input */}
-          <Text style={styles.label}>Email Address</Text>
-          <View style={styles.inputWrapper}>
-           <TextInput
-  placeholder="Enter your email"
-  value={email}
-  onChangeText={setEmail}
-  style={styles.input}
-/>
-          </View>
+        <Text style={styles.label}>Mobile Number</Text>
+
+<View style={styles.mobileRow}>
+  <Text style={styles.prefix}>+91</Text>
+
+  <TextInput
+    placeholder="Enter mobile number"
+    placeholderTextColor="#9CA3AF"
+    value={email}
+    onChangeText={(text) => {
+      // allow only digits, no spaces, max 10
+      const cleaned = text.replace(/[^0-9]/g, '').slice(0, 10);
+      setEmail(cleaned);
+    }}
+    keyboardType="number-pad"
+    style={styles.mobileInput}
+  />
+</View>
+
 
           {/* Password Input */}
           <Text style={styles.label}>Password</Text>
           <View style={styles.passwordWrapper}>
            <TextInput
-  placeholder="Enter your password"
+  placeholder="Enter your Password"
+  placeholderTextColor="#9CA3AF"
   value={password}
   onChangeText={setPassword}
   secureTextEntry={!passwordVisible}
@@ -173,6 +184,29 @@ logoBox: {
   shadowOpacity: 0.35,
   shadowRadius: 28,
   elevation: 12,
+},
+mobileRow: {
+  flexDirection: "row",
+  alignItems: "center",
+  borderWidth: 1,
+  borderColor: "#E5E7EB",
+  borderRadius: 10,
+  paddingHorizontal: 12,
+  height: 48,
+  backgroundColor: "#fff",
+},
+
+prefix: {
+  fontSize: 16,
+  color: "#111827",
+  marginRight: 6,
+  fontWeight: "600",
+},
+
+mobileInput: {
+  flex: 1,
+  fontSize: 16,
+  color: "#111827",
 },
 
 logo: {
@@ -281,6 +315,7 @@ logo: {
   input: {
     flex: 1,
     height: 48,
+    color:'#000'
   },
 
   forgot: {
