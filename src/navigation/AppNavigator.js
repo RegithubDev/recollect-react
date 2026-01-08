@@ -33,6 +33,7 @@ import EditAddressScreen from '../Components/Addresses/EditAddresses';
 import EditProfileScreen from '../Components/Profile/EditProfile/EditProfile';
 import CouponsScreen from '../Components/Profile/Coupons/Coupons';
 import OrderSummary from '../Components/OrderHistory/OrderSummary';
+import ProviderDetailsScreen from '../Components/RecollectProviders/ProviderDetails/ProviderDetails'
 const Stack = createNativeStackNavigator();
 
 const AppNavigator = () => {
@@ -111,6 +112,11 @@ const AppNavigator = () => {
             name="PickupSuccess"
             component={PickupSuccessScreen}
           />
+          <Stack.Screen
+  name="ProviderDetails"
+  component={ProviderDetailsScreen}
+  options={{ headerShown: false }}
+/>
         </>
       )}
     </Stack.Navigator>

@@ -16,7 +16,7 @@ import { useFocusEffect } from "@react-navigation/native";
 
 
 
-export default function ProviderHome() {
+export default function ProviderHome({navigation}) {
   const [orders, setOrders] = useState([]);
 const [loading, setLoading] = useState(true);
 const [providerName, setProviderName] = useState("");
@@ -144,7 +144,8 @@ const fetchOrders = async () => {
 </TouchableOpacity>
 
 
-        <TouchableOpacity style={styles.outlineBtn}>
+        <TouchableOpacity onPress={() => navigation.navigate("ProviderDetails", { orderId: item.id })
+} style={styles.outlineBtn}>
           <Text style={styles.outlineText}>View Details</Text>
           {/* <Ionicons name="chevron-forward" size={16} color="#19A463" /> */}
         </TouchableOpacity>

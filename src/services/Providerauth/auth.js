@@ -74,3 +74,25 @@ export const getOrderHistory = async (page = 0, size = 20) => {
     throw error;
   }
 };
+
+
+export const getOrderDetails = async (orderId) => {
+  try {
+    const token = await AsyncStorage.getItem("providerToken");
+
+    const res = await axios.get(
+      `https://dev.recollect.in/api/v1/order/details/${orderId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return res.data?.data;
+
+  } catch (error) {
+    console.log("ORDER DETAILS ERROR:", error?.response?.data || error.message);
+    throw error;
+  }
+};

@@ -41,19 +41,19 @@ const [regionOpen, setRegionOpen] = useState(false);
 const [scrapRegionId, setScrapRegionId] = useState(null);
 const [regionItems, setRegionItems] = useState([]);
 
-useEffect(() => {
-  if (!coords || !webViewRef.current) return;
+// useEffect(() => {
+//   if (!coords || !webViewRef.current) return;
 
-  const js = `
-    (function() {
-      if (typeof setMarker === 'function') {
-        setMarker(${coords.latitude}, ${coords.longitude});
-      }
-    })();
-  `;
+//   const js = `
+//     (function() {
+//       if (typeof setMarker === 'function') {
+//         setMarker(${coords.latitude}, ${coords.longitude});
+//       }
+//     })();
+//   `;
 
-  webViewRef.current.injectJavaScript(js);
-}, [coords]);
+//   webViewRef.current.injectJavaScript(js);
+// }, [coords]);
 
 
 useEffect(() => {

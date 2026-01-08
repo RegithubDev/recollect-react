@@ -125,13 +125,24 @@ const renderItem = ({ item }) => (
         </View>
 
         {/* LIST */}
-     <FlatList
+  <FlatList
   scrollEnabled={false}
   data={filteredOrders}
   keyExtractor={(item) => item.id.toString()}
   renderItem={renderItem}
   contentContainerStyle={{ paddingBottom: 90 }}
+
+  ListEmptyComponent={
+    !loading && (
+      <View style={{ alignItems: "center", marginTop: 40 }}>
+        <Text style={{ fontSize: 16, color: "#aaa" }}>
+          No Orders...
+        </Text>
+      </View>
+    )
+  }
 />
+
 
 
       </ScrollView>
