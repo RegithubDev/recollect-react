@@ -13,15 +13,16 @@ import {
   Image,Alert
 } from "react-native";
 import { getCustomerAddressDetails, getScrapRegionList, getWardList, updateCustomerAddress } from "../../services/auth";
-import WebView from "react-native-webview";
+
 import DropDownPicker from "react-native-dropdown-picker";
 
 
 const { width } = Dimensions.get("window");
 
 const EditAddressScreen = ({ navigation, route }) => {
-  const { addressId } = route.params;
-const webViewRef = useRef(null);
+
+const { addressId, coords: routeCoords } = route.params || {};
+
 
 const [coords, setCoords] = useState(null);
 
@@ -41,9 +42,9 @@ const [regionLoading, setRegionLoading] = useState(true);
     customerId: "",
     scrapRegionId: "",
     wardId: "",
-    isScrapService: false,
+    // isScrapService: false,
     isScrapLocationActive: false,
-    isBioWasteService: false,
+    // isBioWasteService: false,
     isBioWasteLocationActive: false,
     residenceType: "",
     residenceDetails: "",
@@ -104,28 +105,39 @@ const loadDetails = async () => {
 
     const data = await getCustomerAddressDetails(addressId);
 
+    // 🔥 Decide which coords to use
+    const finalLatitude =
+      routeCoords?.latitude ?? Number(data.latitude);
+
+    const finalLongitude =
+      routeCoords?.longitude ?? Number(data.longitude);
+
+    const finalAddress =
+      routeCoords?.address ?? data.residenceDetails ?? "";
+
     setForm({
-      ...form,
       id: data.id,
       customerId: data.customerId,
       scrapRegionId: data.scrapRegionId,
       wardId: data.wardId,
-      isScrapService: data.isScrapService,
+      // isScrapService: data.isScrapService,
       isScrapLocationActive: data.isScrapLocationActive,
-      isBioWasteService: data.isBioWasteService,
+      // isBioWasteService: data.isBioWasteService,
       isBioWasteLocationActive: data.isBioWasteLocationActive,
       residenceType: data.residenceType || "",
-      residenceDetails: data.residenceDetails || "",
+      residenceDetails: finalAddress,
       landmark: data.landmark || "",
-      latitude: data.latitude?.toString() || "",
-      longitude: data.longitude?.toString() || ""
+      latitude: finalLatitude.toString(),
+      longitude: finalLongitude.toString(),
     });
 
     setCoords({
-      latitude: Number(data.latitude),
-      longitude: Number(data.longitude),
-      address: data.residenceDetails || ""
+      latitude: finalLatitude,
+      longitude: finalLongitude,
+      address: finalAddress,
     });
+
+    setResidenceType(data.residenceType || "");
 
   } catch (err) {
     Alert.alert("Error", "Unable to load address");
@@ -148,7 +160,8 @@ const loadDetails = async () => {
       setSaving(true);
       await updateCustomerAddress(form);
       Alert.alert("Success", "Address updated successfully");
-      navigation.goBack();
+navigation.pop(2);
+
     } catch (err) {
       Alert.alert("Error", "Failed to update address");
     } finally {
@@ -163,143 +176,10 @@ const loadDetails = async () => {
       </View>
     );
   }
-const defaultLat = coords?.latitude || 20;
-const defaultLon = coords?.longitude || 0;
 
 
-  const mapHtml = `
-<!DOCTYPE html>
-<html>
-<head>
-<meta name="viewport" content="initial-scale=1, maximum-scale=1">
-
-<style>
-  html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    background: #f3f4f6;
-  }
-
-  #map {
-    height: 100%;
-    border-radius: 14px;
-    overflow: hidden;
-  }
-
-  /* Search box */
-  #searchBox {
-    position: absolute;
-    top: 14px;
-    left: 14px;
-    right: 14px;
-    z-index: 2000;
-    padding: 10px 12px;
-    border-radius: 10px;
-    border: 1px solid #d1d5db;
-    font-size: 14px;
-    outline: none;
-    background: #ffffff;
-    box-shadow: 0px 6px 14px rgba(0,0,0,0.12);
-  }
-
-  /* center pin */
-  .center-pin {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -100%);
-    z-index: 1500;
-    font-size: 38px;
-    pointer-events: none;
-    text-shadow: 0px 4px 10px rgba(0,0,0,0.4);
-  }
-</style>
-
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-</head>
-
-<body>
-
-<input id="searchBox" placeholder="Search location…" />
-
-<div id="map"></div>
-
-<div class="center-pin">📍</div>
-
-<script>
-  var map = L.map('map').setView([${defaultLat}, ${defaultLon}], 16);
-
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19
-  }).addTo(map);
-
-  var marker = L.marker(
-    [${defaultLat}, ${defaultLon}],
-    { draggable: true }
-  ).addTo(map);
-
-  function sendLocation(lat, lon) {
-    fetch(
-      'https://nominatim.openstreetmap.org/reverse?format=json&lat=' +
-        lat +
-        '&lon=' +
-        lon
-    )
-      .then(res => res.json())
-      .then(data => {
-        window.ReactNativeWebView.postMessage(
-          JSON.stringify({
-            latitude: lat,
-            longitude: lon,
-            address: data?.display_name || ""
-          })
-        );
-      });
-  }
-
-  map.on('moveend', function() {
-    var c = map.getCenter();
-    marker.setLatLng([c.lat, c.lng]);
-    sendLocation(c.lat, c.lng);
-  });
-
-  marker.on('dragend', function(e) {
-    var p = e.target.getLatLng();
-    map.setView([p.lat, p.lng]);
-    sendLocation(p.lat, p.lng);
-  });
-
-  document.getElementById('searchBox').addEventListener('change', function(e) {
-    var query = e.target.value;
-
-    fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + query)
-      .then(res => res.json())
-      .then(results => {
-        if (!results.length) return;
-
-        var place = results[0];
-        var lat = parseFloat(place.lat);
-        var lon = parseFloat(place.lon);
-
-        map.setView([lat, lon], 17);
-        marker.setLatLng([lat, lon]);
-        sendLocation(lat, lon);
-      });
-  });
-
-  function setMarker(lat, lon) {
-    map.setView([lat, lon], 17);
-    marker.setLatLng([lat, lon]);
-    sendLocation(lat, lon);
-  }
-</script>
 
 
-</body>
-</html>
-`;
 
   return (
    <SafeAreaView style={styles.container}>
@@ -322,23 +202,13 @@ const defaultLon = coords?.longitude || 0;
                       </TouchableOpacity>
                       <Text style={styles.headerTitle}>Edit Addresses</Text>
                     </View>
-<WebView
-  ref={webViewRef}
-  originWhitelist={['*']}
-  source={{ html: mapHtml }}
-  style={{ width: "100%", height: 260, borderRadius: 12, overflow: "hidden" }}
-  onMessage={(e) => {
-    const data = JSON.parse(e.nativeEvent.data);
-    setCoords(data);
 
-    setForm(prev => ({
-      ...prev,
-      latitude: data.latitude?.toString(),
-      longitude: data.longitude?.toString()
-    }));
-  }}
-/>
-
+   {coords?.address ? (
+          <>
+            <Text style={styles.detected}>Detected Address</Text>
+            <Text style={styles.address}>{coords.address}</Text>
+          </>
+        ) : null}
 
    <Text style={{ color: "#fff", marginBottom: 6,marginTop:'2%',fontWeight:'500' }}>
           Residence Type
@@ -552,6 +422,8 @@ const styles = {
     paddingBottom: 24,
     marginTop:'10%'
   },
+   detected: { color: "#9ca3af", marginTop: 10 },
+  address: { color: "#fff", marginBottom: 10 },
     headerRow: {
     flexDirection: 'row',
     alignItems: 'center',

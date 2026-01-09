@@ -25,23 +25,35 @@ const { serviceType } = route.params || {};
 useFocusEffect(
   useCallback(() => {
     fetchAddresses();
+    return () => {};
   }, [])
 );
 
 
-  const fetchAddresses = async () => {
-    setLoading(true);
-    try {
-      const token = await AsyncStorage.getItem(TOKEN_KEY);
-      const data = await getCustomerAddresses(token);
-      console.log("customeraddress",data);
-      setAddresses(data);
-    } catch (err) {
-      console.log('Address load failed');
-    } finally {
-      setLoading(false);
-    }
-  };
+
+const fetchAddresses = async () => {
+  setLoading(true);
+  try {
+    const token = await AsyncStorage.getItem(TOKEN_KEY);
+    const res = await getCustomerAddresses(token);
+
+    console.log("RAW getCustomerAddresses():", res);
+
+    const list = Array.isArray(res)
+      ? res
+      : res?.content || res?.data?.content || [];
+
+    console.log("Parsed addresses:", list);
+
+    setAddresses(list);
+  } catch (err) {
+    console.log("Address load failed", err);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
 
   const deleteAddress = (id) => {
   Alert.alert(
@@ -129,7 +141,7 @@ const editAddress = (item) => {
 
 <TouchableOpacity
   style={styles.addBtn}
-  onPress={() => navigation.navigate('AddAddress')}
+  onPress={() => navigation.navigate('ConfirmLocation')}
 >
   <Text style={styles.addBtnText}>＋ Add Address</Text>
 </TouchableOpacity>
@@ -171,6 +183,12 @@ const editAddress = (item) => {
           <Text style={styles.primaryText}>★ Primary</Text>
         </View>
       )}
+{item.isScrapService === false && item.isBioWasteService === false && (
+  <View style={styles.noServiceTagRight}>
+    <Text style={styles.noServiceText}>No Service</Text>
+  </View>
+)}
+
 
       <View style={styles.addressRow}>
         <View style={styles.iconCircle}>
@@ -189,8 +207,11 @@ const editAddress = (item) => {
 
       <View style={styles.actions}>
         <TouchableOpacity style={styles.actionBtn}onPress={() =>
-  navigation.navigate("EditAddress", {
-    addressId: item.id
+  navigation.navigate("ConfirmEditAddress", {
+    addressId: item.id,
+     latitude: Number(item.latitude),
+      longitude: Number(item.longitude),
+      fullAddress: item.residenceDetails,
   })
 }
 >
@@ -226,6 +247,23 @@ topRow: {
   alignItems: 'center',
   padding: 16,
 },
+noServiceTagRight: {
+  position: 'absolute',
+  top: 12,
+  right: 12,
+  backgroundColor: '#ffebeb',
+  borderRadius: 6,
+  paddingHorizontal: 8,
+  paddingVertical: 4,
+  zIndex: 10,
+},
+
+noServiceText: {
+  color: '#d32f2f',
+  fontSize: 11,
+  fontWeight: '600',
+},
+
 
 searchBox: {
   flex: 1,

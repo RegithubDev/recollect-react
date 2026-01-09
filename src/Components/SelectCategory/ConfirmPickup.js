@@ -88,18 +88,24 @@ if (serviceType === "bio") {
     console.log("ORDER RESPONSE:", res);
 
     if (res?.message?.toLowerCase()?.includes("order")) {
+
+
+
       navigation.replace("PickupSuccess", {
         orderId: res?.data?.id,
         selectedDate: res?.data?.scheduleDate,
         serviceType: serviceType || res?.data?.type
       });
     } else {
-      Alert.alert("Error", res?.message || "Failed to place order");
+      Alert.alert("Error", res?.error || "Failed to place order");
     }
   } catch (err) {
-    Alert.alert(
+   Alert.alert(
       "Order Failed",
-      err?.response?.data?.message || err.message || "Something went wrong"
+      err?.response?.data?.error ||
+      err?.response?.data?.message ||
+      err.message ||
+      "Something went wrong"
     );
   } finally {
     setPlacingOrder(false);

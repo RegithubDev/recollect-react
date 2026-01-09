@@ -33,7 +33,9 @@ import EditAddressScreen from '../Components/Addresses/EditAddresses';
 import EditProfileScreen from '../Components/Profile/EditProfile/EditProfile';
 import CouponsScreen from '../Components/Profile/Coupons/Coupons';
 import OrderSummary from '../Components/OrderHistory/OrderSummary';
-import ProviderDetailsScreen from '../Components/RecollectProviders/ProviderDetails/ProviderDetails'
+import ProviderDetailsScreen from '../Components/RecollectProviders/ProviderDetails/ProviderDetails';
+import ConfirmPickupLocationScreen from '../Components/Addresses/ConfirmLocation';
+import ConfirmEditScreen from '../Components/Addresses/EditConfirmAddress';
 const Stack = createNativeStackNavigator();
 
 const AppNavigator = () => {
@@ -108,6 +110,12 @@ const AppNavigator = () => {
   options={{ headerShown: false }}
 />
 
+<Stack.Screen
+  name="ConfirmEditAddress"
+  component={ConfirmEditScreen}
+  options={{ headerShown: false }}
+/>
+
           <Stack.Screen
             name="PickupSuccess"
             component={PickupSuccessScreen}
@@ -115,6 +123,11 @@ const AppNavigator = () => {
           <Stack.Screen
   name="ProviderDetails"
   component={ProviderDetailsScreen}
+  options={{ headerShown: false }}
+/>
+          <Stack.Screen
+  name="ConfirmLocation"
+  component={ConfirmPickupLocationScreen}
   options={{ headerShown: false }}
 />
         </>
