@@ -48,7 +48,7 @@ const coupons = [
   },
 ];
 
-export default function CouponsScreen() {
+export default function CouponsScreen({navigation}) {
   const [active, setActive] = useState("All");
 
   const filtered =
@@ -57,6 +57,21 @@ export default function CouponsScreen() {
   return (
     <ScrollView style={styles.container}>
       {/* Header */}
+           <View style={styles.headerRow}>
+              <TouchableOpacity
+                style={styles.backButton}
+                onPress={() => navigation.goBack?.()}
+              >
+                <Image
+                  source={require('../../../../assets/back.png')}
+                  style={styles.backIcon}
+                />
+              </TouchableOpacity>
+      
+              <Text style={styles.headerTitle}>Coupons & Offers</Text>
+      
+              <View style={{ width: 36 }} />
+            </View>
       <Text style={styles.header}>Featured Offer</Text>
 
       {/* Featured Card */}
@@ -156,7 +171,34 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#0b1410", padding: 16 },
 
   header: { fontSize: 18, fontWeight: "700", marginVertical: 10, color: "#ffffffff" ,marginTop:'12%'},
-
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 18,
+    paddingTop: '12%',
+    paddingBottom: 8,
+  },
+  backButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255, 255, 255, 0.27)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  backIcon: {
+    width: 18,
+    height: 18,
+    resizeMode: 'contain',
+    tintColor: '#ffffffff',
+  },
+  headerTitle: {
+    flex: 1,
+    textAlign: 'center',
+    fontSize: 20,
+    color: '#ffffffff',
+    fontFamily: 'Poppins-SemiBold',
+  },
   featuredCard: {
     borderRadius: 18,
     backgroundColor: "#fff",

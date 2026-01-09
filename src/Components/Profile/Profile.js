@@ -40,7 +40,7 @@ const SCREEN_MAP = {
   scrap: 'Scrap',
   coupons: 'Coupons',
   orders: 'History',
-  faq: 'FaqScreen',
+  faq: 'FAQ',
   policies: 'PoliciesScreen',
   about: 'AboutUs',
   call: 'ContactScreen',

@@ -36,6 +36,7 @@ import OrderSummary from '../Components/OrderHistory/OrderSummary';
 import ProviderDetailsScreen from '../Components/RecollectProviders/ProviderDetails/ProviderDetails';
 import ConfirmPickupLocationScreen from '../Components/Addresses/ConfirmLocation';
 import ConfirmEditScreen from '../Components/Addresses/EditConfirmAddress';
+import FaqScreen from '../Components/Profile/FAQs/FAQ';
 const Stack = createNativeStackNavigator();
 
 const AppNavigator = () => {
@@ -99,6 +100,7 @@ const AppNavigator = () => {
           <Stack.Screen name="SelectScrap" component={SelectScrapScreen} />
              <Stack.Screen name="EditProfile" component={EditProfileScreen} />
 <Stack.Screen name="SelectDHWaste" component={SelectDHWasteScreen} />
+<Stack.Screen name="FAQ" component={FaqScreen} />
 <Stack.Screen
   name="AddAddress"
   component={AddAddressScreen}

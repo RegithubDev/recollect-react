@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator } from "react-native";
-import { getOrderDetails } from "../../services/auth";
-
+import { View, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator,Modal,FlatList,Pressable} from "react-native";
+import { getCancellationReasons, getOrderDetails } from "../../services/auth";
+import CancelOrderModal from '../OrderHistory/CancelOrderModal';
 
 export default function OrderSummary({ navigation , route}) {
 
   const { orderId } = route.params;
+const [showCancelModal, setShowCancelModal] = useState(false);
+
+const [reasons, setReasons] = useState([]);
+const [selectedReason, setSelectedReason] = useState(null);
+const [loadingReasons, setLoadingReasons] = useState(false);
 
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -13,6 +18,11 @@ export default function OrderSummary({ navigation , route}) {
   useEffect(() => {
     loadDetails();
   }, []);
+
+  useEffect(() => {
+  console.log("Modal visible:", showCancelModal);
+}, [showCancelModal]);
+
 
   const loadDetails = async () => {
     try {
@@ -26,21 +36,49 @@ export default function OrderSummary({ navigation , route}) {
   };
 
   // 👉 IMPORTANT GUARD
-  if (loading) {
-    return (
-      <View style={styles.loaderWrapper}>
-        <ActivityIndicator size="large" color="#2ED573" />
-      </View>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <View style={styles.loaderWrapper}>
+  //       <ActivityIndicator size="large" color="#2ED573" />
+  //     </View>
+  //   );
+  // }
 
-  if (!order) {
-    return (
-      <View style={styles.loaderWrapper}>
-        <Text style={{ color: "#fff" }}>No details found</Text>
-      </View>
-    );
+  // if (!order) {
+  //   return (
+  //     <View style={styles.loaderWrapper}>
+  //       <Text style={{ color: "#fff" }}>No details found</Text>
+  //     </View>
+  //   );
+  // }
+
+const openCancelModal = async () => {
+  setShowCancelModal(true);
+  setLoadingReasons(true);
+
+  try {
+    const res = await getCancellationReasons();
+console.log("cancellation", res.data.data)
+    if (res.ok && Array.isArray(res.data?.data)) {
+      setReasons(res.data.data.filter(r => r.isActive));
+    } else {
+      setReasons([]);
+      console.log("Unexpected response", res);
+    }
+  } catch (e) {
+    console.log(e);
+    setReasons([]);
+  } finally {
+    setLoadingReasons(false);
   }
+};
+
+
+
+
+
+
+
 const getStatusColor = (status) => {
   switch (status?.toLowerCase()) {
     case "completed":
@@ -88,11 +126,12 @@ return (
       <View style={styles.cardHeader}>
         <View style={{ gap: 4 }}>
           <Text style={styles.smallLabel}>ORDER ID</Text>
-          <Text style={styles.orderCode}>#{order.code}</Text>
+        <Text style={styles.orderCode}>#{order?.code ?? "-"}</Text>
+
         </View>
 
-        <View style={[styles.statusPill, getStatusColor(order.status)]}>
-          <Text style={styles.statusText}>{order.status}</Text>
+        <View style={[styles.statusPill, getStatusColor(order?.status)]}>
+          <Text style={styles.statusText}>{order?.status}</Text>
         </View>
       </View>
 
@@ -105,7 +144,7 @@ return (
         <View>
           <Text style={styles.label}>Waste Type</Text>
           <Text style={styles.value}>
-            {order.type === "biowaste" ? "Bio Waste" : "Scrap"}
+            {order?.type === "biowaste" ? "Bio Waste" : "Scrap"}
           </Text>
         </View>
       </View>
@@ -120,7 +159,7 @@ return (
           <View>
             <Text style={styles.label}>Created</Text>
             <Text style={styles.value}>
-              {new Date(order.orderDate).toDateString()}
+              {new Date(order?.orderDate).toDateString()}
             </Text>
           </View>
         </View>
@@ -133,7 +172,7 @@ return (
           <View>
             <Text style={styles.label}>Scheduled</Text>
             <Text style={styles.value}>
-              {new Date(order.scheduleDate).toDateString()}
+              {new Date(order?.scheduleDate).toDateString()}
             </Text>
           </View>
         </View>
@@ -149,10 +188,89 @@ return (
   />
         <View style={{ flex: 1 }}>
           <Text style={styles.label}>Pickup Address</Text>
-          <Text style={styles.value}>{order.residenceDetails || "-"}</Text>
+          <Text style={styles.value}>{order?.residenceDetails || "-"}</Text>
         </View>
+        {/* ACTION BUTTONS */}
+
+
+      </View>
+      <View style={styles.actionRow}>
+  <TouchableOpacity onPress={openCancelModal} style={[styles.actionButton, styles.cancelBtn]}>
+    <Text style={styles.actionText}>Cancel</Text>
+  </TouchableOpacity>
+
+  <TouchableOpacity style={[styles.actionButton, styles.rescheduleBtn]}>
+    <Text style={styles.actionText}>Reschedule</Text>
+  </TouchableOpacity>
+</View>
+{showCancelModal && (
+  <View style={styles.sheetOverlay}>
+    <Pressable
+      style={{ flex: 1 }}
+      onPress={() => setShowCancelModal(false)}
+    />
+
+    <View style={styles.sheet}>
+      {/* Drag Indicator */}
+      <View style={styles.dragHandle} />
+
+      <Text style={styles.sheetTitle}>Cancel Order</Text>
+      <Text style={styles.sheetSub}>Select a reason</Text>
+
+      {/* SCROLLABLE CONTENT */}
+      <View style={{ flex: 1 }}>
+        {loadingReasons ? (
+          <ActivityIndicator color="#187D57" />
+        ) : (
+          <FlatList
+            data={reasons}
+            keyExtractor={(item) => item.id.toString()}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 20 }}
+            renderItem={({ item }) => (
+              <Pressable
+                onPress={() => setSelectedReason(item)}
+                style={[
+                  styles.reasonRow,
+                  selectedReason?.id === item.id && styles.reasonActive,
+                ]}
+              >
+                <Text style={styles.reasonText}>{item.reason}</Text>
+              </Pressable>
+            )}
+          />
+        )}
+      </View>
+
+      {/* FIXED ACTION BUTTONS */}
+      <View style={styles.modalActions}>
+        <TouchableOpacity
+          style={styles.modalCancel}
+          onPress={() => setShowCancelModal(false)}
+        >
+          <Text style={styles.modalCancelText}>Close</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[
+            styles.modalConfirm,
+            !selectedReason && { opacity: 0.5 },
+          ]}
+          disabled={!selectedReason}
+        >
+          <Text style={styles.modalConfirmText}>Confirm</Text>
+        </TouchableOpacity>
       </View>
     </View>
+  </View>
+)}
+
+
+    </View>
+
+
+
+
   </View>
 );
 
@@ -162,7 +280,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#0B1512",
-    padding: 16,
+    padding: 8,
+    
   },
 icon: {
   width: 26,
@@ -278,5 +397,154 @@ icon: {
     backgroundColor: "#E5E7EB",
     marginVertical: 10,
   },
+  
+
+
+
+  actionRow: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  marginTop: 16,
+  gap: 12,
+},
+
+actionButton: {
+  flex: 1,
+  paddingVertical: 12,
+  borderRadius: 12,
+  alignItems: "center",
+},
+
+cancelBtn: {
+  backgroundColor: "#EF4444",
+},
+
+rescheduleBtn: {
+  backgroundColor: "#187D57",
+},
+
+actionText: {
+  color: "#fff",
+  fontSize: 14,
+  fontFamily: "Poppins-SemiBold",
+},
+modalOverlay: {
+  flex: 1,
+  backgroundColor: "rgba(0,0,0,0.6)",
+  justifyContent: "flex-end",
+},
+
+modalCard: {
+  backgroundColor: "#fff",
+  borderTopLeftRadius: 20,
+  borderTopRightRadius: 20,
+  padding: 20,
+  maxHeight: "70%",
+},
+
+modalTitle: {
+  fontSize: 18,
+  fontFamily: "Poppins-SemiBold",
+  color: "#111",
+},
+
+modalSub: {
+  fontSize: 12,
+  color: "#6B7280",
+  marginBottom: 10,
+},
+
+reasonRow: {
+  padding: 14,
+  borderRadius: 12,
+  borderWidth: 1,
+  borderColor: "#E5E7EB",
+  marginVertical: 6,
+},
+
+reasonActive: {
+  borderColor: "#187D57",
+  backgroundColor: "#E9F7F1",
+},
+
+reasonText: {
+  fontSize: 14,
+  color: "#111",
+},
+
+modalActions: {
+  flexDirection: "row",
+  marginTop: 16,
+  gap: 12,
+},
+
+modalCancel: {
+  flex: 1,
+  padding: 12,
+  borderRadius: 12,
+  borderWidth: 1,
+  borderColor: "#EF4444",
+  alignItems: "center",
+},
+
+modalCancelText: {
+  color: "#EF4444",
+  fontFamily: "Poppins-SemiBold",
+},
+
+modalConfirm: {
+  flex: 1,
+  padding: 12,
+  borderRadius: 12,
+  backgroundColor: "#187D57",
+  alignItems: "center",
+},
+
+modalConfirmText: {
+  color: "#fff",
+  fontFamily: "Poppins-SemiBold",
+},
+
+sheetOverlay: {
+  position: "absolute",
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  backgroundColor: "rgba(0,0,0,0.6)",
+  justifyContent: "flex-end",
+},
+
+dragHandle: {
+  width: 40,
+  height: 4,
+  backgroundColor: "#D1D5DB",
+  borderRadius: 10,
+  alignSelf: "center",
+  marginBottom: 10,
+},
+
+sheet: {
+  backgroundColor: "#fff",
+  borderTopLeftRadius: 22,
+  borderTopRightRadius: 22,
+  padding: 20,
+  height: "80%",          // 🔥 FIX: use height instead of maxHeight
+  paddingBottom: 30,      // 🔥 FIX: prevents cutting
+},
+
+
+sheetTitle: {
+  fontSize: 18,
+  fontFamily: "Poppins-SemiBold",
+},
+
+sheetSub: {
+  fontSize: 12,
+  color: "#6B7280",
+  marginBottom: 10,
+},
+
+
 });
 

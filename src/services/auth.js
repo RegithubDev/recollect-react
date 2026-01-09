@@ -309,6 +309,27 @@ export const updateCustomerAddress = async (payload) => {
   return { ok: res.ok, data };
 };
 
+export const getCancellationReasons = async () => {
+  const token = await AsyncStorage.getItem("tempToken");
+
+  const res = await fetch(
+    `${BASED_URL}/order/list-cancellation-reasons`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "*/*",
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  const data = await res.json();
+console.log("cancelreasons",data)
+  return { ok: res.ok, data };
+};
+
+
 
 export const updateCustomerProfile = async (payload) => {
   const token = await AsyncStorage.getItem("tempToken");
